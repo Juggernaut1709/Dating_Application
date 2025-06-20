@@ -1,125 +1,175 @@
 import 'package:flutter/material.dart';
 import 'package:dating_app/services/user_service.dart';
 
-class OnboardingScreen extends StatelessWidget {
-  final String routeName = '/onboarding_screen';
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    int? selectedAge;
-    String? selectedGender;
-    final List<String> genders = ['Male', 'Female', 'Other'];
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
 
-    Future<void> completeUserProfile(int age, String gender) async {
-      final UserService userService = UserService();
-      await userService.completeUserProfile(context, age: age, gender: gender);
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  final String routeName = '/onboarding_screen';
+
+  final List<String> questions = [
+    "What is your favorite color?",
+    "What is your favorite hobby?",
+    "What is your dream job?",
+    "What is your favorite food?",
+    "What is your favorite movie?",
+    "What is your favorite book?",
+    "What is your favorite music genre?",
+    "What is your favorite travel destination?",
+    "What is your favorite sport?",
+    "What is your favorite animal?",
+    "What is your favorite season?",
+    "What is your favorite holiday?",
+    "What is your favorite childhood memory?",
+    "What is your biggest fear?",
+    "What is your biggest achievement?",
+    "What is your biggest regret?",
+    "What is your biggest dream?",
+    "What is your biggest challenge?",
+    "What is your biggest inspiration?",
+    "What is your biggest goal?",
+  ];
+  List<double> answers = List.filled(20, -1);
+
+  Future<void> submitAnswers() async {
+    for (int i = 0; i < questions.length; i++) {
+      if (answers[i] == -1) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Please answer all questions.")));
+        return;
+      }
     }
+    await UserService().saveOnboardingAnswers(answers);
+    Navigator.pushNamed(context, '/home_screen');
+  }
 
+  int currentPage = 0;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Welcome')),
-      body: Center(
-        child: StatefulBuilder(
-          builder: (context, setState) {
-            return Card(
-              elevation: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Complete Your Profile',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+      appBar: AppBar(title: const Text('Onboarding')),
+      body: PageView.builder(
+        itemCount: questions.length,
+        controller: PageController(initialPage: currentPage),
+        onPageChanged: (index) {
+          setState(() {
+            currentPage = index;
+          });
+        },
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Question ${index + 1} of ${questions.length}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  questions[index],
+                  style: const TextStyle(fontSize: 22),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40),
+                ToggleButtons(
+                  isSelected: [
+                    answers[index] == 1,
+                    answers[index] == 0.5,
+                    answers[index] == 0,
+                  ],
+                  onPressed: (selectedIndex) {
+                    setState(() {
+                      if (selectedIndex == 0) {
+                        answers[index] = 1;
+                      } else if (selectedIndex == 1) {
+                        answers[index] = 0.5;
+                      } else {
+                        answers[index] = 0;
+                      }
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  children: const [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
                       ),
+                      child: Text('Yes'),
                     ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('Age:', style: TextStyle(fontSize: 18)),
-                        const SizedBox(width: 16),
-                        DropdownButton<int>(
-                          value: selectedAge,
-                          hint: const Text('Select Age'),
-                          items: List.generate(
-                            83,
-                            (index) => DropdownMenuItem(
-                              value: index + 18,
-                              child: Text('${index + 18}'),
-                            ),
-                          ),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedAge = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('Gender:', style: TextStyle(fontSize: 18)),
-                        const SizedBox(width: 16),
-                        ToggleButtons(
-                          borderRadius: BorderRadius.circular(12),
-                          isSelected:
-                              genders.map((g) => g == selectedGender).toList(),
-                          onPressed: (index) {
-                            setState(() {
-                              selectedGender = genders[index];
-                            });
-                          },
-                          children:
-                              genders
-                                  .map(
-                                    (g) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                      ),
-                                      child: Text(g),
-                                    ),
-                                  )
-                                  .toList(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
                       ),
-                      onPressed:
-                          (selectedAge != null && selectedGender != null)
-                              ? () async {
-                                await completeUserProfile(
-                                  selectedAge!,
-                                  selectedGender!,
-                                );
-                              }
-                              : null,
-                      child: const Text(
-                        'Continue',
-                        style: TextStyle(fontSize: 18),
+                      child: Text('Maybe'),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
                       ),
+                      child: Text('No'),
                     ),
                   ],
                 ),
-              ),
-            );
-          },
-        ),
+                const SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (index > 0)
+                      ElevatedButton(
+                        onPressed: () {
+                          PageController controller = PageController(
+                            initialPage: index,
+                          );
+                          controller.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        },
+                        child: const Text('Previous'),
+                      )
+                    else
+                      const SizedBox(width: 100),
+                    if (index < questions.length - 1)
+                      ElevatedButton(
+                        onPressed:
+                            answers[index] == -1
+                                ? null
+                                : () {
+                                  PageController controller = PageController(
+                                    initialPage: index,
+                                  );
+                                  controller.nextPage(
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  );
+                                },
+                        child: const Text('Next'),
+                      )
+                    else
+                      ElevatedButton(
+                        onPressed: answers.contains(-1) ? null : submitAnswers,
+                        child: const Text('Submit'),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

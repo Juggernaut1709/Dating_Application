@@ -10,13 +10,11 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
-  final UserService _userService = UserService();
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _userService.handleLandingNavigation(context);
+      UserService().handleLandingNavigation(context);
     });
   }
 

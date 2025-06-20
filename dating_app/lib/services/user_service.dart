@@ -66,4 +66,17 @@ class UserService {
       dev.log('Navigation error: $e');
     }
   }
+
+  Future<void> saveOnboardingAnswers(List<double> answers) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) return;
+
+      await _firestore.collection('users').doc(user.uid).update({
+        'onboarding_answers': answers,
+      });
+    } catch (e) {
+      dev.log('Error saving onboarding answers: $e');
+    }
+  }
 }

@@ -59,6 +59,7 @@ class _AuthScreenState extends State<AuthScreen> {
     } else {
       setState(() {
         _errorMessage = responseMessage;
+        showError();
       });
     }
   }
@@ -71,6 +72,7 @@ class _AuthScreenState extends State<AuthScreen> {
     if (validationMessage.isNotEmpty) {
       setState(() {
         _errorMessage = validationMessage;
+        showError();
       });
       return;
     }
@@ -81,6 +83,7 @@ class _AuthScreenState extends State<AuthScreen> {
     );
     setState(() {
       _errorMessage = responseMessage;
+      showError();
     });
   }
 
