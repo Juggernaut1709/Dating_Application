@@ -1,3 +1,4 @@
+import 'package:dating_app/widgets/confirm_button.dart';
 import 'package:flutter/material.dart';
 import 'package:dating_app/services/user_service.dart';
 
@@ -12,26 +13,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final String routeName = '/onboarding_screen';
 
   final List<String> questions = [
-    "What is your favorite color?",
-    "What is your favorite hobby?",
-    "What is your dream job?",
-    "What is your favorite food?",
-    "What is your favorite movie?",
-    "What is your favorite book?",
-    "What is your favorite music genre?",
-    "What is your favorite travel destination?",
-    "What is your favorite sport?",
-    "What is your favorite animal?",
-    "What is your favorite season?",
-    "What is your favorite holiday?",
-    "What is your favorite childhood memory?",
-    "What is your biggest fear?",
-    "What is your biggest achievement?",
-    "What is your biggest regret?",
-    "What is your biggest dream?",
-    "What is your biggest challenge?",
-    "What is your biggest inspiration?",
-    "What is your biggest goal?",
+    "Do you consider yourself an introvert?",
+    "Do you enjoy trying new things?",
+    "Do you believe in love at first sight?",
+    "Is humor important to you in a partner?",
+    "Do you consider yourself emotionally expressive?",
+    "Do you prefer deep conversations over small talk?",
+    "Is physical appearance more important than personality?",
+    "Are you more of a morning person?",
+    "Do you want to get married someday?",
+    "Do you believe partners should always share everything?",
+    "Would you date someone with very different religious views?",
+    "Is a healthy lifestyle important to you?",
+    "Do you enjoy traveling?",
+    "Is spending time with family important to you?",
+    "Do you consider career a top priority right now?",
+    "Do you believe in soulmates?",
+    "Are you interested in pets or animals?",
+    "Do you work out regularly?",
+    "Would you date someone who doesn’t want children?",
+    "Do you work out regularly?",
   ];
   List<double> answers = List.filled(20, -1);
 
@@ -45,7 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       }
     }
     await UserService().saveOnboardingAnswers(answers);
-    Navigator.pushNamed(context, '/home_screen');
+    Navigator.pushNamed(context, '/profile_setting_screen');
   }
 
   int currentPage = 0;
@@ -126,44 +127,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 const SizedBox(height: 40),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if (index > 0)
-                      ElevatedButton(
-                        onPressed: () {
-                          PageController controller = PageController(
-                            initialPage: index,
-                          );
-                          controller.previousPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        },
-                        child: const Text('Previous'),
-                      )
-                    else
-                      const SizedBox(width: 100),
-                    if (index < questions.length - 1)
-                      ElevatedButton(
-                        onPressed:
-                            answers[index] == -1
-                                ? null
-                                : () {
-                                  PageController controller = PageController(
-                                    initialPage: index,
-                                  );
-                                  controller.nextPage(
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                  );
-                                },
-                        child: const Text('Next'),
-                      )
-                    else
-                      ElevatedButton(
-                        onPressed: answers.contains(-1) ? null : submitAnswers,
-                        child: const Text('Submit'),
-                      ),
+                    if (index == 19)
+                      ConfirmButton(onPressed: submitAnswers, text: 'Submit'),
                   ],
                 ),
               ],

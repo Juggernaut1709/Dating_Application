@@ -79,4 +79,25 @@ class UserService {
       dev.log('Error saving onboarding answers: $e');
     }
   }
+
+  Future<void> saveProfile(
+    int age,
+    String gender,
+    double lat,
+    double long,
+  ) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) return;
+
+      await _firestore.collection('users').doc(user.uid).update({
+        'age': age,
+        'gender': gender,
+        'location': {'latitude': lat, 'longitude': long},
+      });
+      dev.log('Profile saved successfully for user: ${user.uid}');
+    } catch (e) {
+      dev.log('Error saving profile: $e');
+    }
+  }
 }

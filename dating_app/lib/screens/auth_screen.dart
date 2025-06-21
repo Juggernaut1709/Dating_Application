@@ -112,6 +112,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Center(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),

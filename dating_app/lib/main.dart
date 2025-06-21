@@ -2,6 +2,7 @@ import 'package:dating_app/screens/auth_screen.dart';
 import 'package:dating_app/screens/landing_screen.dart';
 import 'package:dating_app/screens/logged_in_screens/home_screen.dart';
 import 'package:dating_app/screens/onboarding_screen.dart';
+import 'package:dating_app/screens/profile_setting_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const LandingScreen(),
         '/auth_screen': (context) => const AuthScreen(),
         '/onboarding_screen': (context) => const OnboardingScreen(),
+        '/profile_setting_screen': (context) => const ProfileSettingScreen(),
         '/home_screen': (context) => const HomeScreen(),
       },
     );
