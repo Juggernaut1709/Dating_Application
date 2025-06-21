@@ -40,11 +40,6 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   void signIn() async {
-    setState(() {
-      isLoading = true;
-      _errorMessage = null;
-    });
-
     final responseMessage = await _authService.signIn(
       _emailController.text.trim(),
       _passwordController.text,
@@ -201,8 +196,17 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Widget showError() {
+    if (_errorMessage != null) {
+      Future.delayed(const Duration(seconds: 3), () {
+        if (mounted && _errorMessage != null) {
+          setState(() {
+            _errorMessage = null;
+          });
+        }
+      });
+    }
     return _errorMessage == null
         ? const SizedBox.shrink()
-        : Text(_errorMessage!, style: TextStyle(color: Colors.red));
+        : Text(_errorMessage!, style: const TextStyle(color: Colors.red));
   }
 }

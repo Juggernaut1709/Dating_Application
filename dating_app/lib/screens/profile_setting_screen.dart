@@ -1,3 +1,4 @@
+import 'package:dating_app/services/req_permission.dart';
 import 'package:dating_app/widgets/confirm_button.dart';
 import 'package:flutter/material.dart';
 import 'package:dating_app/services/user_service.dart';
@@ -34,18 +35,13 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
   Future<void> _getCurrentLocation() async {
     final service = LocationService();
     final location = await service.getCurrentLocation();
-    if (location == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not fetch current location.')),
-      );
-      return;
-    }
 
     setState(() {
-      _selectedLocation = location;
+      _selectedLocation = LatLng(location.latitude, location.longitude);
     });
 
-    final address = await service.getAddressFromLatLng(location);
+    final latLng = LatLng(location.latitude, location.longitude);
+    final address = await service.getAddressFromLatLng(latLng);
     setState(() {
       _locationAddress = address;
     });
@@ -57,6 +53,11 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
     setState(() {
       _locationAddress = address;
     });
+  }
+
+  void initState() {
+    super.initState();
+    requestLocationPermission();
   }
 
   @override
