@@ -1,3 +1,4 @@
+import 'package:dating_app/widgets/circular_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:dating_app/services/user_service.dart';
 
@@ -20,6 +21,10 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return const Scaffold(
+      body: Center(
+        child: CircularLoader(size: 50.0, color: Colors.indigoAccent),
+      ),
+    );
   }
 }

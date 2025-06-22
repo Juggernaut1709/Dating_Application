@@ -30,6 +30,11 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Home'),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.settings),
+          tooltip: 'Settings',
+          onPressed: () {},
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -42,6 +47,34 @@ class HomeScreen extends StatelessWidget {
         child: Text(
           'Welcome to the Home Screen!',
           style: TextStyle(fontSize: 20),
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chat_bubble_outline),
+              tooltip: 'Chat',
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.people_outline),
+              tooltip: 'Friends',
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.help_outline),
+              tooltip: 'Help',
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: const Icon(Icons.search),
+              tooltip: 'Search',
+              onPressed: () {},
+            ),
+          ],
         ),
       ),
     );

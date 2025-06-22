@@ -1,4 +1,6 @@
+import 'package:dating_app/services/error_service.dart';
 import 'package:dating_app/services/user_service.dart';
+import 'package:dating_app/widgets/circular_loader.dart';
 import 'package:dating_app/widgets/confirm_button.dart';
 import 'package:flutter/material.dart';
 import 'package:dating_app/services/auth_service.dart';
@@ -35,27 +37,28 @@ class _AuthScreenState extends State<AuthScreen> {
       _emailController.clear();
       _passwordController.clear();
       _confirmPasswordController.clear();
-      isLoading = false;
     });
   }
 
   void signIn() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ErrorService.showError(context, "Email and Password cannot be empty");
+      return;
+    }
+
+    setState(() => isLoading = true);
+
     final responseMessage = await _authService.signIn(
       _emailController.text.trim(),
       _passwordController.text,
     );
 
-    setState(() {
-      isLoading = false;
-    });
+    setState(() => isLoading = false);
 
     if (responseMessage == "Success") {
       _userService.handleLandingNavigation(context);
     } else {
-      setState(() {
-        _errorMessage = responseMessage;
-        showError();
-      });
+      ErrorService.showError(context, responseMessage);
     }
   }
 
@@ -65,21 +68,21 @@ class _AuthScreenState extends State<AuthScreen> {
       _confirmPasswordController.text,
     );
     if (validationMessage.isNotEmpty) {
-      setState(() {
-        _errorMessage = validationMessage;
-        showError();
-      });
+      ErrorService.showError(context, validationMessage);
       return;
     }
+
+    setState(() => isLoading = true);
+
     final responseMessage = await _authService.signup(
       _usernameController.text,
       _emailController.text,
       _passwordController.text,
     );
-    setState(() {
-      _errorMessage = responseMessage;
-      showError();
-    });
+
+    setState(() => isLoading = false);
+
+    ErrorService.showError(context, responseMessage);
   }
 
   String validatePassword(String password, String confirmPassword) {
@@ -108,23 +111,26 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Center(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 500),
-            transitionBuilder:
-                (child, animation) => SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(1.0, 0.0),
-                    end: Offset.zero,
-                  ).animate(animation),
-                  child: child,
+      body:
+          isLoading
+              ? const Center(child: CircularLoader(size: 40))
+              : Center(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 500),
+                    transitionBuilder:
+                        (child, animation) => SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(1.0, 0.0),
+                            end: Offset.zero,
+                          ).animate(animation),
+                          child: child,
+                        ),
+                    child: isLogin ? _buildLoginScreen() : _buildSignUpScreen(),
+                  ),
                 ),
-            child: isLogin ? _buildLoginScreen() : _buildSignUpScreen(),
-          ),
-        ),
-      ),
+              ),
     );
   }
 
@@ -193,20 +199,5 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ),
     );
-  }
-
-  Widget showError() {
-    if (_errorMessage != null) {
-      Future.delayed(const Duration(seconds: 3), () {
-        if (mounted && _errorMessage != null) {
-          setState(() {
-            _errorMessage = null;
-          });
-        }
-      });
-    }
-    return _errorMessage == null
-        ? const SizedBox.shrink()
-        : Text(_errorMessage!, style: const TextStyle(color: Colors.red));
   }
 }

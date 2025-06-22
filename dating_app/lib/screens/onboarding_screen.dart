@@ -1,3 +1,4 @@
+import 'package:dating_app/services/error_service.dart';
 import 'package:dating_app/widgets/confirm_button.dart';
 import 'package:flutter/material.dart';
 import 'package:dating_app/services/user_service.dart';
@@ -39,14 +40,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> submitAnswers() async {
     for (int i = 0; i < questions.length; i++) {
       if (answers[i] == -1) {
-        ScaffoldMessenger.of(
+        ErrorService.showError(
           context,
-        ).showSnackBar(SnackBar(content: Text("Please answer all questions.")));
+          'Please answer all questions before submitting.',
+        );
         return;
       }
     }
     await UserService().saveOnboardingAnswers(answers);
-    Navigator.pushNamed(context, '/profile_setting_screen');
+    Navigator.pushReplacementNamed(context, '/profile_setting_screen');
   }
 
   int currentPage = 0;
