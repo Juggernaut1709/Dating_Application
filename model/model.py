@@ -1,11 +1,17 @@
+import os
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import firestore
 
-# Initialize Firebase Admin SDK
-cred = credentials.Certificate('path/to/serviceAccountKey.json')
-firebase_admin.initialize_app(cred)
+from firebase_config import init_firebase
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Initialize Firebase app
+init_firebase()
+
+# Get Firestore client
 db = firestore.client()
 
 def fetch_users_from_firestore():
@@ -15,8 +21,8 @@ def fetch_users_from_firestore():
     users = {}
     for doc in docs:
         data = doc.to_dict()
-        if 'answers' in data and len(data['answers']) == 20:
-            users[doc.id] = data['answers']
+        if 'onboarding_answers' in data and len(data['onboarding_answers']) == 20 and data['onboarding_answers'][0] is not -1:
+            users[doc.id] = data['onboarding_answers']
     return users
 
 def get_top_matches(base_user, user_data, top_n=2):
@@ -34,12 +40,3 @@ def get_top_matches(base_user, user_data, top_n=2):
     sim_scores.sort(key=lambda x: x[1], reverse=True)
 
     return sim_scores[:top_n]
-
-# Example usage
-if __name__ == "__main__":
-    users = fetch_users_from_firestore()
-    base_user = 'user1'  # change as needed
-    matches = get_top_matches(base_user, users)
-    
-    for uid, score in matches:
-        print(f"Match: {uid}, Similarity Score: {score:.2f}")

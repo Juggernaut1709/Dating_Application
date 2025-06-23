@@ -1,0 +1,22 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+.venv/
+env/
+venv/
+
+# Secret files
+.env
+.secrets/
+*.json
+
+# VSCode/IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
