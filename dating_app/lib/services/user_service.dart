@@ -100,4 +100,51 @@ class UserService {
       dev.log('Error saving profile: $e');
     }
   }
+
+  Future<Object?> retrieveUserProfile(String uid) async {
+    try {
+      final shortnameDoc =
+          await _firestore.collection('usershortnames').doc(uid).get();
+      if (shortnameDoc.exists) {
+        final userId = shortnameDoc.data()?['uid'];
+        final currentUser = _auth.currentUser;
+        if (userId == currentUser?.uid) {
+          return "You narcissist!!!.";
+        }
+        if (userId != null) {
+          final userDoc =
+              await _firestore.collection('users').doc(userId).get();
+          if (userDoc.exists) {
+            final data = userDoc.data();
+            dev.log('User profile retrieved: $data');
+            return {'name': data?['username'], 'age': data?['age']};
+          }
+        }
+        return null;
+      }
+    } catch (e) {
+      dev.log('Error retrieving user profile: $e');
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>> getMyProfile() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No user is currently logged in');
+    }
+
+    final doc = await _firestore.collection('users').doc(user.uid).get();
+    if (!doc.exists) {
+      throw Exception('User profile does not exist');
+    }
+
+    return {
+      'name': doc.data()?['username'] ?? '',
+      'age': doc.data()?['age'] ?? 0,
+      'gender': doc.data()?['gender'] ?? '',
+      'email': doc.data()?['email'] ?? '',
+      'shortName': doc.data()?['shortName'] ?? '',
+    };
+  }
 }
