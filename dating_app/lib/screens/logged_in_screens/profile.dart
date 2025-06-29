@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dating_app/services/user_service.dart';
+import 'package:dating_app/widgets/circular_loader.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -14,6 +15,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String gender = '';
   String email = '';
   String shortname = '';
+  dynamic location;
+
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -21,15 +25,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _fetchProfileData();
   }
 
-  void _fetchProfileData() {
-    UserService().getMyProfile().then((user) {
-      setState(() {
-        name = user['name'] ?? '';
-        age = user['age']?.toString() ?? '';
-        gender = user['gender'] ?? '';
-        email = user['email'] ?? '';
-        shortname = user['shortName'] ?? '';
-      });
+  void _fetchProfileData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    final user = await UserService().getMyProfile();
+    setState(() {
+      name = user['name'] ?? '';
+      age = user['age']?.toString() ?? '';
+      gender = user['gender'] ?? '';
+      email = user['email'] ?? '';
+      shortname = user['shortName'] ?? '';
+      _isLoading = false;
     });
   }
 
@@ -37,18 +44,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Profile'), centerTitle: true),
-      body: Column(
-        children: [
-          const SizedBox(height: 40),
-          const Center(child: Icon(Icons.person, size: 100)),
-          const SizedBox(height: 40),
-          _buildProfileField('Name', name),
-          _buildProfileField('Age', age),
-          _buildProfileField('Gender', gender),
-          _buildProfileField('Email', email),
-          _buildProfileField('Unique ID', shortname),
-        ],
-      ),
+      body:
+          _isLoading
+              ? const Center(child: CircularLoader())
+              : OrientationBuilder(
+                builder: (context, orientation) {
+                  final isPortrait = orientation == Orientation.portrait;
+                  return Center(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Flex(
+                          direction:
+                              isPortrait ? Axis.vertical : Axis.horizontal,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.person, size: 100),
+                                const SizedBox(height: 40),
+                                _buildProfileField('Name', name),
+                                _buildProfileField('Age', age),
+                                _buildProfileField('Gender', gender),
+                                _buildProfileField('Email', email),
+                                _buildProfileField('Unique ID', shortname),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
     );
   }
 

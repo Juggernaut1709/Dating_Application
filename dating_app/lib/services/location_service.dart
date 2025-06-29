@@ -39,15 +39,4 @@ class LocationService {
     } catch (_) {}
     return null;
   }
-
-  Future<LatLng> getLatLngFromAddress(String address) async {
-    try {
-      List<Location> locations = await locationFromAddress(address);
-      if (locations.isNotEmpty) {
-        final location = locations.first;
-        return LatLng(location.latitude, location.longitude);
-      }
-    } catch (_) {}
-    return LatLng(0, 0);
-  }
 }

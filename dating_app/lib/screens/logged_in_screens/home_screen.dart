@@ -151,8 +151,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.help_outline),
-              tooltip: 'Help',
-              onPressed: () {},
+              tooltip: 'Questions',
+              onPressed: () {
+                Navigator.pushNamed(context, '/onboarding_screen');
+              },
             ),
             IconButton(
               icon: const Icon(Icons.person_outline),

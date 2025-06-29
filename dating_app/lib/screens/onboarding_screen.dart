@@ -48,7 +48,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       }
     }
     await UserService().saveOnboardingAnswers(answers);
-    Navigator.pushReplacementNamed(context, '/profile_setting_screen');
+    final user = await UserService().getCurrentUser();
+    if (user != null && await UserService().getUserAge(user.uid) != 0) {
+      Navigator.pushReplacementNamed(context, '/home_screen');
+    } else {
+      Navigator.pushReplacementNamed(context, '/profile_setting_screen');
+    }
   }
 
   int currentPage = 0;

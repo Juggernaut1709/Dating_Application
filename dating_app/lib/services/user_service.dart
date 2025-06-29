@@ -145,6 +145,8 @@ class UserService {
       'gender': doc.data()?['gender'] ?? '',
       'email': doc.data()?['email'] ?? '',
       'shortName': doc.data()?['shortName'] ?? '',
+      'location':
+          doc.data()?['location'] ?? {'latitude': 0.0, 'longitude': 0.0},
     };
   }
 }
