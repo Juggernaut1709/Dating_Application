@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dating_app/services/auth_service.dart';
 import 'package:dating_app/services/error_service.dart';
 import 'package:dating_app/services/user_service.dart';
+import 'package:dating_app/widgets/matching_profile.dart';
 import 'package:dating_app/widgets/userprofilebottomsheet.dart';
 import 'package:flutter/material.dart';
 
@@ -124,14 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(width: 8),
-          Expanded(
-            child: Center(
-              child: Text(
-                'Welcome to the Home Screen!',
-                style: TextStyle(fontSize: 20),
-              ),
-            ),
-          ),
+          Expanded(child: MatchingProfile()),
         ],
       ),
       bottomNavigationBar: BottomAppBar(

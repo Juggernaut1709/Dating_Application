@@ -1,0 +1,54 @@
+import 'package:dio/dio.dart';
+import 'package:dating_app/services/user_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:developer' as dev;
+
+final dio = Dio();
+
+Future<List<List>> sendMatchRequest() async {
+  final userService = UserService();
+  final currentUser = await userService.getCurrentUser();
+  dev.log('Current user: ${currentUser?.uid}');
+
+  final userDoc =
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser!.uid)
+          .get();
+
+  final onboardingAnswers = userDoc.data()?['onboarding_answers'] ?? [];
+
+  final data = {
+    'user_id': currentUser.uid,
+    'onboarding_answers': onboardingAnswers,
+  };
+
+  dev.log('Sending match request with data: $data');
+  final response = await dio.post(
+    "http://192.168.29.32:8000/matches",
+    data: data,
+    options: Options(headers: {"Content-Type": "application/json"}),
+  );
+  final List<dynamic> matches = response.data;
+
+  List<List<dynamic>> result = [];
+
+  for (var match in matches) {
+    final userId = match[0];
+    final similarity = match[1];
+
+    final userSnapshot =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final userData = userSnapshot.data();
+
+    if (userData != null) {
+      final username = userData['username'] ?? '';
+      final shortname = userData['shortname'] ?? '';
+      final age = userData['age'] ?? '';
+      result.add([username, shortname, age, similarity]);
+    }
+  }
+
+  dev.log('Matches found: ${result.length}');
+  return result;
+}

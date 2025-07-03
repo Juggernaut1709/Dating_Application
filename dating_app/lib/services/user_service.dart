@@ -107,7 +107,7 @@ class UserService {
           await _firestore.collection('usershortnames').doc(uid).get();
       if (shortnameDoc.exists) {
         final userId = shortnameDoc.data()?['uid'];
-        final currentUser = _auth.currentUser;
+        final currentUser = await getCurrentUser();
         if (userId == currentUser?.uid) {
           return "You narcissist!!!.";
         }
@@ -129,7 +129,7 @@ class UserService {
   }
 
   Future<Map<String, dynamic>> getMyProfile() async {
-    final user = _auth.currentUser;
+    final user = await getCurrentUser();
     if (user == null) {
       throw Exception('No user is currently logged in');
     }
