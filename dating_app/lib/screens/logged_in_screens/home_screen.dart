@@ -57,6 +57,21 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  MatchingProfile _callMatch() {
+    return MatchingProfile();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _callMatch();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(width: 8),
-          Expanded(child: MatchingProfile()),
+          Expanded(child: _callMatch()),
         ],
       ),
       bottomNavigationBar: BottomAppBar(

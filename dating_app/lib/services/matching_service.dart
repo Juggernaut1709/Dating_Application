@@ -25,7 +25,7 @@ Future<List<List>> sendMatchRequest() async {
 
   dev.log('Sending match request with data: $data');
   final response = await dio.post(
-    "http://192.168.29.32:8000/matches",
+    "https://9c055e2d5c87.ngrok-free.app/matches",
     data: data,
     options: Options(headers: {"Content-Type": "application/json"}),
   );
@@ -43,7 +43,7 @@ Future<List<List>> sendMatchRequest() async {
 
     if (userData != null) {
       final username = userData['username'] ?? '';
-      final shortname = userData['shortname'] ?? '';
+      final shortname = userData['shortName'] ?? '';
       final age = userData['age'] ?? '';
       result.add([username, shortname, age, similarity]);
     }

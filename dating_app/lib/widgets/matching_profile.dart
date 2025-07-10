@@ -63,7 +63,7 @@ class _MatchingProfileState extends State<MatchingProfile> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Similarity: ${match[3]}%',
+                    'Similarity: ${double.parse((match[3] * 100).toStringAsFixed(2))}%',
                     style: const TextStyle(fontSize: 18),
                   ),
                 ],
