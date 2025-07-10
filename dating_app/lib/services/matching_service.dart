@@ -23,9 +23,13 @@ Future<List<List>> sendMatchRequest() async {
     'onboarding_answers': onboardingAnswers,
   };
 
+  final urlSnapshot =
+      await FirebaseFirestore.instance.collection('url').doc('url').get();
+  final String url = (urlSnapshot.data())!['url'] + "/matches";
+
   dev.log('Sending match request with data: $data');
   final response = await dio.post(
-    "https://9c055e2d5c87.ngrok-free.app/matches",
+    url,
     data: data,
     options: Options(headers: {"Content-Type": "application/json"}),
   );

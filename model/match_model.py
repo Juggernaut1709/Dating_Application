@@ -1,19 +1,9 @@
-#import os
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from firebase_admin import firestore
-from firebase_config import init_firebase
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# Initialize Firebase app
-init_firebase()
-
-# Get Firestore client
-db = firestore.client()
+from backend.firebase_config import get_firestore_client
 
 def fetch_users_from_firestore():
+    db = get_firestore_client()
     users_ref = db.collection('users')
     docs = users_ref.stream()
 
@@ -33,7 +23,6 @@ def get_top_matches(base_user, user_data, top_n=2):
     base_vector = np.array(user_data[base_user]).reshape(1, -1)
 
     similarities = cosine_similarity(base_vector, vectors)[0]
-
     sim_scores = list(zip(user_ids, similarities))
     sim_scores = [pair for pair in sim_scores if pair[0] != base_user]
     sim_scores.sort(key=lambda x: x[1], reverse=True)

@@ -79,8 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Home'),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.settings),
-          tooltip: 'Settings',
+          icon: const Icon(Icons.notifications),
+          tooltip: 'Notifications',
           onPressed: () {},
         ),
         actions: [

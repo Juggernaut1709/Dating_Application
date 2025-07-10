@@ -37,36 +37,38 @@ class _MatchingProfileState extends State<MatchingProfile> {
       itemBuilder: (context, index) {
         final match = matches[index];
         return Center(
-          child: Card(
-            margin: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Name: ${match[0]}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+          child: SingleChildScrollView(
+            child: Card(
+              margin: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Name: ${match[0]}',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Short name: ${match[1]}',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Age: ${match[2]}',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Similarity: ${double.parse((match[3] * 100).toStringAsFixed(2))}%',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Text(
+                      'Short name: ${match[1]}',
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Age: ${match[2]}',
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Similarity: ${double.parse((match[3] * 100).toStringAsFixed(2))}%',
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
