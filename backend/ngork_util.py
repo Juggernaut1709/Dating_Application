@@ -1,5 +1,5 @@
 from pyngrok import ngrok
-from backend.firebase_config import get_firestore_client
+from backend.firebase import get_firestore_client
 
 def start_ngrok_and_update_firestore(port: int = 8000):
     public_url = ngrok.connect(port).public_url

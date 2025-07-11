@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from backend.firebase_config import get_firestore_client
+from backend.firebase import get_firestore_client
 
 def fetch_users_from_firestore():
     db = get_firestore_client()

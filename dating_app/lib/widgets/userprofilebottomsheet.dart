@@ -1,10 +1,28 @@
+import 'package:dating_app/services/backend_service.dart';
+import 'package:dating_app/services/error_service.dart';
 import 'package:flutter/material.dart';
 
-class UserProfileBottomSheet extends StatelessWidget {
+class UserProfileBottomSheet extends StatefulWidget {
   final Map<String, dynamic> profile;
 
   const UserProfileBottomSheet({Key? key, required this.profile})
     : super(key: key);
+
+  @override
+  State<UserProfileBottomSheet> createState() => _UserProfileBottomSheetState();
+}
+
+class _UserProfileBottomSheetState extends State<UserProfileBottomSheet> {
+  void _sendFriendRequest(BuildContext context) {
+    Future<String> response = sendFriendRequest(widget.profile['uid']);
+    if (response.toString() == "success") {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Sent a friend request')));
+    } else {
+      ErrorService.showError(context, response.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +59,12 @@ class UserProfileBottomSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Name : ${profile['name']}',
+                    'Name : ${widget.profile['name']}',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
                   Text(
-                    'Age : ${profile['age']}',
+                    'Age : ${widget.profile['age']}',
                     style: TextStyle(fontSize: 16),
                   ),
                 ],
@@ -61,7 +79,9 @@ class UserProfileBottomSheet extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.person_add),
               color: const Color.fromARGB(255, 8, 158, 158),
-              onPressed: () {},
+              onPressed: () {
+                _sendFriendRequest(context);
+              },
               tooltip: 'Add Friend',
             ),
           ],

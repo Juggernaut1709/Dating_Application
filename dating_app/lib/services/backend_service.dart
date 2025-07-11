@@ -56,3 +56,23 @@ Future<List<List>> sendMatchRequest() async {
   dev.log('Matches found: ${result.length}');
   return result;
 }
+
+Future<String> sendFriendRequest(String friend) async {
+  final userService = UserService();
+  final currentUser = await userService.getCurrentUser();
+
+  final data = {'user_id': currentUser!.uid, 'friend_id': friend};
+
+  final urlSnapshot =
+      await FirebaseFirestore.instance.collection('url').doc('url').get();
+  final String url = (urlSnapshot.data())!['url'] + "/send_friend_request";
+
+  dev.log('Sending friend request with data: $data');
+  final response = await dio.post(
+    url,
+    data: data,
+    options: Options(headers: {"Content-Type": "application/json"}),
+  );
+  final String result = response.data;
+  return result;
+}

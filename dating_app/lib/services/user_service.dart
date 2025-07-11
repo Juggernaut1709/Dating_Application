@@ -117,7 +117,12 @@ class UserService {
           if (userDoc.exists) {
             final data = userDoc.data();
             dev.log('User profile retrieved: $data');
-            return {'name': data?['username'], 'age': data?['age']};
+            dev.log('UserID: $userId');
+            return {
+              'name': data?['username'],
+              'age': data?['age'],
+              'uid': userId,
+            };
           }
         }
         return null;
