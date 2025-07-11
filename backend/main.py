@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 import model.match_model as mm
 from backend.ngork_util import start_ngrok_and_update_firestore
-import firebase as fb
+import backend.firebase as fb
 
 # Initialize Firebase once
 fb.init_firebase()
