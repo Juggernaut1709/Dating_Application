@@ -1,18 +1,5 @@
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from backend.firebase import get_firestore_client
-
-def fetch_users_from_firestore():
-    db = get_firestore_client()
-    users_ref = db.collection('users')
-    docs = users_ref.stream()
-
-    users = {}
-    for doc in docs:
-        data = doc.to_dict()
-        if 'onboarding_answers' in data and len(data['onboarding_answers']) == 20 and data['onboarding_answers'][0] != -1:
-            users[doc.id] = data['onboarding_answers']
-    return users
 
 def get_top_matches(base_user, user_data, top_n=2):
     if base_user not in user_data:

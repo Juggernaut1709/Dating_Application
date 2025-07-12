@@ -154,4 +154,14 @@ class UserService {
           doc.data()?['location'] ?? {'latitude': 0.0, 'longitude': 0.0},
     };
   }
+
+  Future<List<dynamic>> getIncomingFriendRequests() async {
+    final user = await getCurrentUser();
+
+    final userDoc = await _firestore.collection('users').doc(user!.uid).get();
+    final List<dynamic> requestIds =
+        userDoc.data()?['incoming_friend_requests'] ?? [];
+
+    return requestIds;
+  }
 }

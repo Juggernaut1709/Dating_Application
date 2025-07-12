@@ -38,19 +38,12 @@ Future<List<List>> sendMatchRequest() async {
   List<List<dynamic>> result = [];
 
   for (var match in matches) {
-    final userId = match[0];
-    final similarity = match[1];
-
-    final userSnapshot =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    final userData = userSnapshot.data();
-
-    if (userData != null) {
-      final username = userData['username'] ?? '';
-      final shortname = userData['shortName'] ?? '';
-      final age = userData['age'] ?? '';
-      result.add([username, shortname, age, similarity]);
-    }
+    result.add([
+      match['username'],
+      match['shortName'],
+      match['age'],
+      match['similarity'],
+    ]);
   }
 
   dev.log('Matches found: ${result.length}');
@@ -73,6 +66,32 @@ Future<String> sendFriendRequest(String friend) async {
     data: data,
     options: Options(headers: {"Content-Type": "application/json"}),
   );
-  final String result = response.data;
-  return result;
+
+  final result = response.data as Map<String, dynamic>;
+  return result['message'];
+}
+
+Future<String> friendRequestResponse(friend, decision) async {
+  final userService = UserService();
+  final currentUser = await userService.getCurrentUser();
+
+  final data = {
+    'user_id': currentUser!.uid,
+    'friend_id': friend,
+    'decision': decision,
+  };
+
+  final urlSnapshot =
+      await FirebaseFirestore.instance.collection('url').doc('url').get();
+  final String url = (urlSnapshot.data())!['url'] + "/friend_request_response";
+
+  dev.log('Sending friend request response with data: $data');
+  final response = await dio.post(
+    url,
+    data: data,
+    options: Options(headers: {"Content-Type": "application/json"}),
+  );
+
+  final result = response.data as Map<String, dynamic>;
+  return result['message'];
 }

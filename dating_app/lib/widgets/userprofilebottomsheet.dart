@@ -13,14 +13,18 @@ class UserProfileBottomSheet extends StatefulWidget {
 }
 
 class _UserProfileBottomSheetState extends State<UserProfileBottomSheet> {
-  void _sendFriendRequest(BuildContext context) {
-    Future<String> response = sendFriendRequest(widget.profile['uid']);
-    if (response.toString() == "success") {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Sent a friend request')));
-    } else {
-      ErrorService.showError(context, response.toString());
+  Future<void> _sendFriendRequest(BuildContext context) async {
+    try {
+      String response = await sendFriendRequest(widget.profile['uid']);
+      if (response == "success") {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Sent a friend request')));
+      } else {
+        ErrorService.showError(context, response);
+      }
+    } catch (e) {
+      ErrorService.showError(context, "Failed to send friend request.");
     }
   }
 

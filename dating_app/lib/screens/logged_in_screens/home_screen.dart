@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dating_app/services/auth_service.dart';
 import 'package:dating_app/services/error_service.dart';
 import 'package:dating_app/services/user_service.dart';
+import 'package:dating_app/widgets/friend_request.dart';
 import 'package:dating_app/widgets/matching_profile.dart';
 import 'package:dating_app/widgets/userprofilebottomsheet.dart';
 import 'package:flutter/material.dart';
@@ -81,7 +82,12 @@ class _HomeScreenState extends State<HomeScreen> {
         leading: IconButton(
           icon: const Icon(Icons.notifications),
           tooltip: 'Notifications',
-          onPressed: () {},
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (_) => const FriendRequestsDialog(),
+            );
+          },
         ),
         actions: [
           IconButton(

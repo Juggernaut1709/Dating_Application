@@ -16,11 +16,20 @@ async def get_matches(request: Request):
     print("✅ Received request from", request.client.host)
     user_data = await request.json()
     print("📦 Data:", user_data)
-    users = mm.fetch_users_from_firestore()
-    return mm.get_top_matches(user_data['user_id'], users, top_n=2)
+    users = fb.fetch_users_from_firestore()
+    top_matches = mm.get_top_matches(user_data['user_id'], users, top_n=2)
+    return fb.get_match_detailes(top_matches)
 
 @app.post("/send_frined_request")
 async def send_freind_request(request: Request):
     print("✅ Received request from", request.client.host)
     data = await request.json()
     print("📦 Data:", data)
+    return fb.send_friend_request(data['user_id'], data['friend_id'])
+
+@app.post("/friend_request_response")
+async def friend_request_response(request: Request):
+    print("✅ Received request from", request.client.host)
+    data = await request.json()
+    print("📦 Data:", data)
+    return fb.friend_request_response(data['user_id'], data['friend_id'], data['decision'])
