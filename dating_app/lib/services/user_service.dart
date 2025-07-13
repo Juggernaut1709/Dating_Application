@@ -164,4 +164,19 @@ class UserService {
 
     return requestIds;
   }
+
+  Future<List<dynamic>> getFriends() async {
+    final user = await getCurrentUser();
+
+    final userDoc = await _firestore.collection('users').doc(user!.uid).get();
+    final List<dynamic> friendIds = userDoc.data()?['friends'] ?? [];
+
+    return friendIds;
+  }
+
+  Future<String> unfriendUser(String uid) async {
+    final user = await getCurrentUser();
+
+    return "a";
+  }
 }
