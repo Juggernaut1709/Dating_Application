@@ -1,7 +1,8 @@
 import 'package:dating_app/screens/auth_screen.dart';
 import 'package:dating_app/screens/landing_screen.dart';
+import 'package:dating_app/screens/logged_in_screens/friends_screen.dart';
 import 'package:dating_app/screens/logged_in_screens/home_screen.dart';
-import 'package:dating_app/screens/logged_in_screens/profile.dart';
+import 'package:dating_app/screens/logged_in_screens/profile_screen.dart';
 import 'package:dating_app/screens/onboarding_screen.dart';
 import 'package:dating_app/screens/profile_setting_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         '/profile_setting_screen': (context) => const ProfileSettingScreen(),
         '/home_screen': (context) => const HomeScreen(),
         '/profile_screen': (context) => const ProfileScreen(),
+        '/friends_screen': (context) => const FriendsScreen(),
       },
     );
   }

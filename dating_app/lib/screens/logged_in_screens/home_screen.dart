@@ -162,7 +162,9 @@ class _HomeScreenState extends State<HomeScreen> {
             IconButton(
               icon: const Icon(Icons.people_outline),
               tooltip: 'Friends',
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, '/friends_screen');
+              },
             ),
             IconButton(
               icon: const Icon(Icons.help_outline),
