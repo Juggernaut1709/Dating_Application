@@ -1,6 +1,7 @@
 import 'package:dating_app/screens/auth_screen.dart';
 import 'package:dating_app/screens/landing_screen.dart';
-import 'package:dating_app/screens/logged_in_screens/friends_screen.dart';
+import 'package:dating_app/screens/logged_in_screens/chat_screen.dart';
+import 'package:dating_app/screens/logged_in_screens/friends_lover_screen.dart';
 import 'package:dating_app/screens/logged_in_screens/home_screen.dart';
 import 'package:dating_app/screens/logged_in_screens/profile_screen.dart';
 import 'package:dating_app/screens/onboarding_screen.dart';
@@ -33,7 +34,12 @@ class MyApp extends StatelessWidget {
         '/profile_setting_screen': (context) => const ProfileSettingScreen(),
         '/home_screen': (context) => const HomeScreen(),
         '/profile_screen': (context) => const ProfileScreen(),
-        '/friends_screen': (context) => const FriendsScreen(),
+        '/friends_lover_screen': (context) => const FriendsLoverScreen(),
+        '/chat_screen': (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          final friendId = (args is String && args.isNotEmpty) ? args : '';
+          return ChatScreen(friendId: friendId);
+        },
       },
     );
   }

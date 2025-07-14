@@ -155,15 +155,10 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-              icon: const Icon(Icons.chat_bubble_outline),
-              tooltip: 'Chat',
-              onPressed: () {},
-            ),
-            IconButton(
               icon: const Icon(Icons.people_outline),
               tooltip: 'Friends',
               onPressed: () {
-                Navigator.pushNamed(context, '/friends_screen');
+                Navigator.pushNamed(context, '/friends_lover_screen');
               },
             ),
             IconButton(

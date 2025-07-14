@@ -4,15 +4,15 @@ import 'package:dating_app/widgets/circular_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:dating_app/services/user_service.dart';
 
-class FriendsScreen extends StatefulWidget {
-  const FriendsScreen({Key? key}) : super(key: key);
+class FriendsLoverScreen extends StatefulWidget {
+  const FriendsLoverScreen({Key? key}) : super(key: key);
 
   @override
-  State<FriendsScreen> createState() => _FriendsScreenState();
+  State<FriendsLoverScreen> createState() => _FriendsLoverScreenState();
 }
 
-class _FriendsScreenState extends State<FriendsScreen> {
-  final String routeName = '/friends_screen';
+class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
+  final String routeName = '/friends_lover_screen';
   bool _isLoading = true;
   List<String> _friendList = [];
 
@@ -80,9 +80,21 @@ class _FriendsScreenState extends State<FriendsScreen> {
                 itemBuilder: (context, index) {
                   final friendId = _friendList[index];
                   return ListTile(
+                    leading: IconButton(
+                      icon: const Icon(Icons.chat_bubble_outline),
+                      tooltip: "Chat",
+                      color: Colors.blue,
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          '/chat_screen',
+                          arguments: friendId,
+                        );
+                      },
+                    ),
                     title: Text("Friend ID: $friendId"),
                     trailing: IconButton(
-                      icon: const Icon(Icons.remove_circle_outline),
+                      icon: const Icon(Icons.person_remove),
                       tooltip: "Unfriend",
                       color: Colors.red,
                       onPressed: () => _confirmUnfriend(friendId),
