@@ -95,3 +95,22 @@ Future<String> friendRequestResponse(friend, decision) async {
   final result = response.data as Map<String, dynamic>;
   return result['message'];
 }
+
+Future<String> unfriendUser(String uid) async {
+  final userService = UserService();
+  final currentUser = await userService.getCurrentUser();
+  if (currentUser == null) return "User not found";
+
+  final urlSnapshot =
+      await FirebaseFirestore.instance.collection('url').doc('url').get();
+  final String url = (urlSnapshot.data())!['url'] + "/unfriend_user";
+
+  final response = await dio.post(
+    url,
+    data: {'user_id': currentUser.uid, 'friend_id': uid},
+    options: Options(headers: {"Content-Type": "application/json"}),
+  );
+
+  final result = response.data as Map<String, dynamic>;
+  return result['message'];
+}

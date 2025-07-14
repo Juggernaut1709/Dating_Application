@@ -1,3 +1,5 @@
+import 'package:dating_app/services/backend_service.dart';
+import 'package:dating_app/services/error_service.dart';
 import 'package:dating_app/widgets/circular_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:dating_app/services/user_service.dart';
@@ -21,6 +23,9 @@ class _FriendsScreenState extends State<FriendsScreen> {
   }
 
   Future<void> _loadFriends() async {
+    setState(() {
+      _isLoading = true;
+    });
     final List<dynamic> friends = await UserService().getFriends();
     setState(() {
       _friendList = List<String>.from(friends);
@@ -49,10 +54,14 @@ class _FriendsScreenState extends State<FriendsScreen> {
     );
 
     if (confirm == true) {
-      await UserService().unfriendUser(friendId);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('User has been unfriended.')),
-      );
+      String response = await unfriendUser(friendId);
+      if (response == "success") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User has been unfriended.')),
+        );
+      } else {
+        ErrorService.showError(context, response);
+      }
       _loadFriends();
     }
   }

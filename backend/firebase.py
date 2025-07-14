@@ -97,3 +97,19 @@ def friend_request_response(receiver_id, sender_id, decision):
             return {"message": "Friend request rejeted."}     
     except:
         return {"message": "An error has occured."}
+    
+def unfriend_user(user_id, friend_id):
+    db = get_firestore_client()
+    try:
+        db.collection("users").document(user_id).update({
+            "friends": firestore.ArrayRemove([friend_id])
+        })
+
+        db.collection("users").document(friend_id).update({
+            "friends": firestore.ArrayRemove([user_id])
+        })
+
+        return {"message": "success"}
+    except:
+        return {"message": "An error has occured."}
+

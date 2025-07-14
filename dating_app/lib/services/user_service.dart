@@ -173,10 +173,4 @@ class UserService {
 
     return friendIds;
   }
-
-  Future<String> unfriendUser(String uid) async {
-    final user = await getCurrentUser();
-
-    return "a";
-  }
 }
