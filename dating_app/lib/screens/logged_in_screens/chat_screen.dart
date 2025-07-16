@@ -10,7 +10,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  static const String routeName = '/chat_screen';
+  final String routeName = '/chat_screen';
   bool _isLoading = true;
 
   @override

@@ -6,6 +6,7 @@ import 'package:dating_app/widgets/friend_request.dart';
 import 'package:dating_app/widgets/matching_profile.dart';
 import 'package:dating_app/widgets/userprofilebottomsheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,6 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final String routeName = '/home_screen';
 
   final TextEditingController _userIdController = TextEditingController();
+  final TextEditingController _rangeController = TextEditingController();
+  int _distance = -1;
 
   void _signOut(BuildContext context) {
     AuthService()
@@ -58,8 +61,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _updateDistance() {
+    setState(() {
+      _distance =
+          _rangeController.text.isEmpty ? -1 : int.parse(_rangeController.text);
+    });
+  }
+
   MatchingProfile _callMatch() {
-    return MatchingProfile();
+    return MatchingProfile(distance: _distance);
   }
 
   @override
@@ -70,6 +80,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    _userIdController.dispose();
+    _rangeController.dispose();
     super.dispose();
   }
 
@@ -104,7 +116,48 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               children: [
                 Expanded(
+                  flex: 2,
                   child: TextField(
+                    controller: _rangeController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: InputDecoration(
+                      hintText: 'range',
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 0,
+                        horizontal: 16,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _updateDistance,
+                  child: const Text('Submit'),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _userIdController,
                     onChanged: (value) {
                       setState(() {
                         _userIdController.text = value;
@@ -145,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(height: 8),
           Expanded(child: _callMatch()),
         ],
       ),
