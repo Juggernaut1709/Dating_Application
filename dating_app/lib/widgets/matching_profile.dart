@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
 
 class MatchingProfile extends StatefulWidget {
-  const MatchingProfile({Key? key}) : super(key: key);
+  const MatchingProfile({Key? key, required this.distance}) : super(key: key);
+
+  final int distance;
 
   @override
   _MatchingProfileState createState() => _MatchingProfileState();
@@ -20,7 +22,7 @@ class _MatchingProfileState extends State<MatchingProfile> {
   }
 
   Future<void> _loadMatches() async {
-    final result = await sendMatchRequest();
+    final result = await sendMatchRequest(widget.distance);
     dev.log('Matches loaded: ${result.length} matches found');
     setState(() {
       matches = result;

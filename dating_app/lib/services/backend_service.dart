@@ -5,7 +5,7 @@ import 'dart:developer' as dev;
 
 final dio = Dio();
 
-Future<List<List>> sendMatchRequest() async {
+Future<List<List>> sendMatchRequest(int distance) async {
   final userService = UserService();
   final currentUser = await userService.getCurrentUser();
   dev.log('Current user: ${currentUser?.uid}');
@@ -21,6 +21,7 @@ Future<List<List>> sendMatchRequest() async {
   final data = {
     'user_id': currentUser.uid,
     'onboarding_answers': onboardingAnswers,
+    'distance': distance,
   };
 
   final urlSnapshot =

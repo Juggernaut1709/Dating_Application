@@ -2,6 +2,7 @@ import os
 import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
+from math import radians, cos, sin, asin, sqrt
 
 # Load environment variables from .env
 load_dotenv()
@@ -24,19 +25,52 @@ def get_firestore_client():
 
 
 
-def fetch_users_from_firestore():
+def fetch_users_from_firestore(user_id, distance):
     db = get_firestore_client()
     users_ref = db.collection('users')
     docs = users_ref.stream()
-
+    
+    # Get the current user's location
+    current_user = db.collection('users').document(user_id).get().to_dict()
+    if not current_user or 'location' not in current_user:
+        return {}
+    
+    current_lat = current_user['location']['latitude']
+    current_lon = current_user['location']['longitude']
+    
     users = {}
     for doc in docs:
+        if doc.id == user_id:
+            continue
+            
         data = doc.to_dict()
         if 'onboarding_answers' in data and len(data['onboarding_answers']) == 20 and data['onboarding_answers'][0] != -1:
-            users[doc.id] = data['onboarding_answers']
+            if distance == -1:
+                users[doc.id] = data['onboarding_answers']
+            elif 'location' in data:
+                user_lat = data['location']['latitude']
+                user_lon = data['location']['longitude']
+                
+                # Calculate distance between users using Haversine formula
+                
+                # Convert coordinates to radians
+                lat1, lon1, lat2, lon2 = map(radians, [current_lat, current_lon, user_lat, user_lon])
+                
+                # Haversine formula
+                dlon = lon2 - lon1
+                dlat = lat2 - lat1
+                a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+                c = 2 * asin(sqrt(a))
+                r = 6371  # Radius of Earth in kilometers
+                calculated_distance = c * r
+                
+                # If user is within the specified distance, include them
+                if calculated_distance <= distance:
+                    users[doc.id] = data['onboarding_answers']
+    
     return users
 
-def get_match_detailes(top_matches):
+def get_match_details(top_matches):
     db = get_firestore_client()
     result = []
 
