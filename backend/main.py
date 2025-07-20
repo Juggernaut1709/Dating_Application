@@ -1,12 +1,13 @@
 import datetime
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Depends, Query
 from backend.utils import get_or_create_chat
 import model.match_model as mm
 from backend.ngork_util import start_ngrok_and_update_firestore
 import backend.firebase as fb
 from backend.connection_manager import ConnectionManager
-from database.database import SessionLocal
-from database.tables.messsage import Message
+from database.database_str import SessionLocal
+from database.tables.message import Message
+from database.schemas.message import Message as MessageSchema
 
 # Initialize Firebase once
 fb.init_firebase()
@@ -65,7 +66,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                 sender_id=sender_id,
                 receiver_id=receiver_id,
                 message=message_text,
-                timestamp=datetime.utcnow()
+                timestamp=datetime.datetime.utcnow()
             )
             db.add(message)
             db.commit()
@@ -81,3 +82,26 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
 
     except WebSocketDisconnect:
         manager.disconnect(user_id)
+
+@app.get("/chat/history")
+def get_chat_history(sender_id: str = Query(...), receiver_id: str = Query(...)):
+    db = SessionLocal()
+    try:
+        chat_id = get_or_create_chat(db, sender_id, receiver_id)
+        messages = db.query(Message).filter(
+            Message.chat_id == chat_id
+        ).order_by(Message.timestamp.asc()).all()
+        
+        result = []
+        for msg in messages:
+            try:
+                result.append(MessageSchema.from_orm(msg))
+            except Exception as e:
+                print("❌ Failed to convert message:")
+                print("    Message dict:", msg.__dict__)
+                print("    Error:", repr(e))
+        
+        return result
+    finally:
+        db.close()
+

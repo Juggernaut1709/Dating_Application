@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
-from database.database import Base
+from database.database_str import Base
 import datetime
 
 class Message(Base):
@@ -10,4 +10,4 @@ class Message(Base):
     sender_id = Column(String, nullable=False)
     receiver_id = Column(String, nullable=False)
     message = Column(String, nullable=False)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
