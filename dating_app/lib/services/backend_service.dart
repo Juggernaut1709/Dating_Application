@@ -40,6 +40,7 @@ Future<List<List>> sendMatchRequest(int distance) async {
 
   for (var match in matches) {
     result.add([
+      match['uid'],
       match['username'],
       match['shortName'],
       match['age'],

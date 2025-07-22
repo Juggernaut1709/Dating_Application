@@ -10,7 +10,7 @@ class FriendRequestsDialog extends StatefulWidget {
 }
 
 class _FriendRequestsDialogState extends State<FriendRequestsDialog> {
-  List<String> requestIds = [];
+  List<Map<String, dynamic>> requests = [];
 
   @override
   void initState() {
@@ -20,7 +20,7 @@ class _FriendRequestsDialogState extends State<FriendRequestsDialog> {
 
   Future<void> fetchRequests() async {
     final data = await UserService().getIncomingFriendRequests();
-    setState(() => requestIds = List<String>.from(data));
+    setState(() => requests = List<Map<String, dynamic>>.from(data));
   }
 
   Future<void> requestResponse(String senderUid, int decision) async {
@@ -40,25 +40,26 @@ class _FriendRequestsDialogState extends State<FriendRequestsDialog> {
       content: SizedBox(
         width: double.maxFinite,
         child:
-            requestIds.isEmpty
+            requests.isEmpty
                 ? const Text("No incoming requests")
                 : ListView.builder(
                   shrinkWrap: true,
-                  itemCount: requestIds.length,
+                  itemCount: requests.length,
                   itemBuilder: (context, index) {
-                    final uid = requestIds[index];
+                    final request = requests[index];
                     return ListTile(
-                      title: Text("User ID: $uid"),
+                      title: Text("Username: ${request['username']}"),
+                      subtitle: Text("Short Name: ${request['shortName']}"),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             icon: const Icon(Icons.check, color: Colors.green),
-                            onPressed: () => requestResponse(uid, 1),
+                            onPressed: () => requestResponse(request['uid'], 1),
                           ),
                           IconButton(
                             icon: const Icon(Icons.close, color: Colors.red),
-                            onPressed: () => requestResponse(uid, 0),
+                            onPressed: () => requestResponse(request['uid'], 0),
                           ),
                         ],
                       ),

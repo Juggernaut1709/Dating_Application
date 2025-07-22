@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'dart:ui';
 import 'package:dating_app/services/backend_service.dart';
 import 'package:dating_app/services/error_service.dart';
@@ -15,7 +16,7 @@ class FriendsLoverScreen extends StatefulWidget {
 
 class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
   bool _isLoading = true;
-  List<String> _friendList = [];
+  List<Map<String, String>> _friendList = [];
 
   @override
   void initState() {
@@ -26,8 +27,9 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
   Future<void> _loadFriends() async {
     setState(() => _isLoading = true);
     final List<dynamic> friends = await UserService().getFriends();
+    dev.log('Loaded friends: $friends');
     setState(() {
-      _friendList = List<String>.from(friends);
+      _friendList = List<Map<String, String>>.from(friends);
       _isLoading = false;
     });
   }
@@ -118,9 +120,10 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
                           padding: const EdgeInsets.all(16),
                           physics: const BouncingScrollPhysics(),
                           itemCount: _friendList.length,
-                          itemBuilder:
-                              (context, index) =>
-                                  _buildFriendCard(_friendList[index]),
+                          itemBuilder: (context, index) {
+                            final friend = _friendList[index];
+                            return _buildFriendCard(friend);
+                          },
                         ),
               ),
             ],
@@ -168,7 +171,7 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
           ),
           const SizedBox(height: 20),
           Text(
-            "You have no friends yet.",
+            "Meet a few people first.",
             style: TextStyle(
               color: Colors.white.withOpacity(0.8),
               fontSize: 18,
@@ -179,7 +182,9 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
     );
   }
 
-  Widget _buildFriendCard(String friendId) {
+  Widget _buildFriendCard(Map<String, String> friend) {
+    final friendId = friend['uid'] ?? 'Unknown';
+    final friendName = friend['username'] ?? friendId;
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: ClipRRect(
@@ -206,7 +211,7 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(
-                    "Friend ID: $friendId",
+                    "Friend: $friendName",
                     style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),

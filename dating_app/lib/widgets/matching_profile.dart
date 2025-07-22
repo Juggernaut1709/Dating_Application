@@ -1,4 +1,5 @@
 import 'package:dating_app/services/backend_service.dart';
+import 'package:dating_app/services/error_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
 
@@ -27,6 +28,21 @@ class _MatchingProfileState extends State<MatchingProfile> {
     setState(() {
       matches = result;
     });
+  }
+
+  Future<void> _sendFriendRequest(matchId) async {
+    try {
+      String response = await sendFriendRequest(matchId);
+      if (response == "success") {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Sent a friend request')));
+      } else {
+        ErrorService.showError(context, response);
+      }
+    } catch (e) {
+      ErrorService.showError(context, "Failed to send friend request.");
+    }
   }
 
   @override
@@ -68,6 +84,23 @@ class _MatchingProfileState extends State<MatchingProfile> {
                     Text(
                       'Similarity: ${double.parse((match[3] * 100).toStringAsFixed(2))}%',
                       style: const TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.person_add),
+                          onPressed: () {
+                            _sendFriendRequest(match[0]);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.favorite),
+                          onPressed: () {
+                            // Handle like action
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),

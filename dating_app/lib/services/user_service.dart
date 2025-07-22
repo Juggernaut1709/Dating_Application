@@ -162,7 +162,18 @@ class UserService {
     final List<dynamic> requestIds =
         userDoc.data()?['incoming_friend_requests'] ?? [];
 
-    return requestIds;
+    List<Map<String, dynamic>> requests = [];
+    for (var id in requestIds) {
+      final doc = await _firestore.collection('users').doc(id).get();
+      if (doc.exists) {
+        requests.add({
+          'uid': id,
+          'username': doc.data()?['username'] ?? '',
+          'shortName': doc.data()?['shortName'] ?? '',
+        });
+      }
+    }
+    return requests;
   }
 
   Future<List<dynamic>> getFriends() async {
@@ -171,6 +182,14 @@ class UserService {
     final userDoc = await _firestore.collection('users').doc(user!.uid).get();
     final List<dynamic> friendIds = userDoc.data()?['friends'] ?? [];
 
-    return friendIds;
+    List<Map<String, String>> requests = [];
+    for (var id in friendIds) {
+      final doc = await _firestore.collection('users').doc(id).get();
+      if (doc.exists) {
+        dev.log('Friend ID: $id');
+        requests.add({'uid': id, 'username': doc.data()?['username'] ?? ''});
+      }
+    }
+    return requests;
   }
 }
