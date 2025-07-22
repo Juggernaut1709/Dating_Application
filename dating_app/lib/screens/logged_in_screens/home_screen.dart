@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:ui';
 import 'package:dating_app/services/auth_service.dart';
 import 'package:dating_app/services/error_service.dart';
 import 'package:dating_app/services/user_service.dart';
@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class HomeScreen extends StatefulWidget {
+  final String routeName = '/home_screen';
   const HomeScreen({super.key});
 
   @override
@@ -16,194 +17,208 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final String routeName = '/home_screen';
-
   final TextEditingController _userIdController = TextEditingController();
-  final TextEditingController _rangeController = TextEditingController();
-  int _distance = -1;
+  int _distance = 1001; // Default distance
 
-  void _signOut(BuildContext context) {
-    AuthService()
-        .signOut()
-        .then((value) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Successfully signed out')),
-          );
-        })
-        .catchError((error) {
-          ErrorService.showError(context, 'Error signing out: $error');
-        });
-    sleep(const Duration(seconds: 1));
-    Navigator.pushReplacementNamed(context, '/auth_screen');
+  void _signOut() async {
+    await AuthService().signOut();
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Successfully signed out')));
+      Navigator.pushReplacementNamed(context, '/auth_screen');
+      print("Navigating to Auth Screen");
+    }
   }
 
   void _onSearchSubmit(String userId) async {
     if (userId.isNotEmpty) {
       Object? result = await UserService().retrieveUserProfile(userId);
+      if (!mounted) return;
 
       if (result is String) {
         ErrorService.showError(context, result);
       } else if (result is Map<String, dynamic>) {
         showModalBottomSheet(
           context: context,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
-          ),
-          builder: (context) {
-            return UserProfileBottomSheet(profile: result);
-          },
+          backgroundColor: Colors.transparent,
+          isScrollControlled: true,
+          builder: (context) => UserProfileBottomSheet(profile: result),
         );
-      } else {
-        ErrorService.showError(context, 'User not found');
       }
     } else {
       ErrorService.showError(context, 'Please enter a user ID to search');
     }
   }
 
-  void _updateDistance() {
-    setState(() {
-      _distance =
-          _rangeController.text.isEmpty ? -1 : int.parse(_rangeController.text);
-    });
-  }
-
-  MatchingProfile _callMatch() {
-    return MatchingProfile(distance: _distance);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _callMatch();
-  }
-
   @override
   void dispose() {
     _userIdController.dispose();
-    _rangeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.notifications),
-          tooltip: 'Notifications',
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (_) => const FriendRequestsDialog(),
-            );
+      backgroundColor: const Color(0xFF1a1a2e),
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF1a1a2e), Color(0xFF16213e)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          SafeArea(
+            bottom: false, // Avoid double padding with custom bottom bar
+            child: Column(
+              children: [
+                _buildAppBar(),
+                _buildControlPanel(),
+                Expanded(
+                  child: MatchingProfile(
+                    key: ValueKey(_distance), // Rebuilds when distance changes
+                    distance: _distance,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: _buildBottomAppBar(),
+    );
+  }
+
+  Widget _buildAppBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            'VibeMatch',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.notifications_none,
+                  color: Colors.white,
+                  size: 28,
+                ),
+                onPressed:
+                    () => showDialog(
+                      context: context,
+                      builder: (_) => const FriendRequestsDialog(),
+                    ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.logout, color: Colors.white, size: 28),
+                onPressed: _signOut,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildControlPanel() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSearchBar(),
+                const SizedBox(height: 16),
+                _buildDistanceSlider(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return SizedBox(
+      height: 48,
+      child: TextField(
+        controller: _userIdController,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          hintText: 'Search by User ID...',
+          hintStyle: TextStyle(color: Colors.white.withOpacity(0.6)),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.1),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.search, color: Color(0xFF00BF8F)),
+            onPressed: () => _onSearchSubmit(_userIdController.text),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDistanceSlider() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Distance: ${_distance == 1001 ? 'Any' : 'Up to $_distance km'}',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Slider(
+          value: _distance.toDouble(),
+          min: 1,
+          max: 1001,
+          activeColor: const Color(0xFF00BF8F),
+          inactiveColor: Colors.white.withOpacity(0.2),
+          onChanged: (value) {
+            setState(() {
+              _distance = value.round();
+            });
           },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Sign Out',
-            onPressed: () => _signOut(context),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TextField(
-                    controller: _rangeController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: InputDecoration(
-                      hintText: 'range',
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 0,
-                        horizontal: 16,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: _updateDistance,
-                  child: const Text('Submit'),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _userIdController,
-                    onChanged: (value) {
-                      setState(() {
-                        _userIdController.text = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Search for love (or friendship)...',
-                      prefixIcon: const Icon(Icons.search),
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 0,
-                        horizontal: 16,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                        borderSide: BorderSide(),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                        borderSide: BorderSide(color: Colors.grey),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                CircleAvatar(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_forward, color: Colors.white),
-                    onPressed: () => _onSearchSubmit(_userIdController.text),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(child: _callMatch()),
-        ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
+      ],
+    );
+  }
+
+  Widget _buildBottomAppBar() {
+    return BottomAppBar(
+      color: const Color(0xFF16213e).withOpacity(0.95),
+      shape: const CircularNotchedRectangle(),
+      elevation: 8,
+      child: IconTheme(
+        data: IconThemeData(color: Colors.white.withOpacity(0.8), size: 28),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -215,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.help_outline),
+              icon: const Icon(Icons.question_mark),
               tooltip: 'Questions',
               onPressed: () {
                 Navigator.pushNamed(context, '/onboarding_screen');
