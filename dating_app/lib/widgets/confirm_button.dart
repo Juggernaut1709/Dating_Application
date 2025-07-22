@@ -12,6 +12,7 @@ class ConfirmButton extends StatelessWidget {
     this.text = 'Confirm',
     this.color = Colors.blue,
     this.textColor = Colors.white,
+    required String label,
   }) : super(key: key);
 
   @override

@@ -4,12 +4,14 @@ class InputField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final bool obscureText;
+  final IconData? prefixIcon;
 
   const InputField({
     super.key,
     required this.controller,
     required this.hintText,
     this.obscureText = false,
+    this.prefixIcon,
   });
 
   @override
