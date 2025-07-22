@@ -14,6 +14,7 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   void initState() {
     super.initState();
+    // This ensures that the navigation logic is called after the first frame is built.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       UserService().handleLandingNavigation(context);
     });
@@ -21,9 +22,38 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: CircularLoader(size: 50.0, color: Colors.indigoAccent),
+    return Scaffold(
+      body: Container(
+        // Apply the same gradient background as the other screens
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1a1a2e), Color(0xFF16213e)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Add the app logo for a branded loading experience
+              const Icon(Icons.music_note, color: Color(0xFF00BF8F), size: 60),
+              const SizedBox(height: 20),
+              const Text(
+                "VibeMatch",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              const SizedBox(height: 40),
+              // Use the themed circular loader
+              const CircularLoader(size: 50.0),
+            ],
+          ),
+        ),
       ),
     );
   }
