@@ -101,44 +101,94 @@ def get_match_details(top_matches):
 def send_friend_request(sender_id, receiver_id):
     db = get_firestore_client()
     try:
+        # Store as dict with id and role 'F'
+        sender_request = {"id": receiver_id, "role": "F"}
+        receiver_request = {"id": sender_id, "role": "F"}
+
         db.collection("users").document(sender_id).update({
-            "outgoing_friend_requests": firestore.ArrayUnion([receiver_id])
+            "outgoing_requests": firestore.ArrayUnion([sender_request])
         })
 
-        # Add sender to receiver's incoming requests
         db.collection("users").document(receiver_id).update({
-            "incoming_friend_requests": firestore.ArrayUnion([sender_id])
+            "incoming_requests": firestore.ArrayUnion([receiver_request])
         })
 
         return {"message": "Friend request sent."}
-    except:
+    except Exception:
         return {"message": "An error has occured."}
     
-def friend_request_response(receiver_id, sender_id, decision):
+def send_love_request(sender_id, match_id):
+    db = get_firestore_client()
+    try:
+        match_doc = db.collection("users").document(match_id).get()
+        if match_doc.exists:
+            match_data = match_doc.to_dict()
+            lovers = match_data.get("lover", [])
+            if lovers:
+                return {"message": "User already has a lover."}
+        else:
+            return {"message": "Match user not found."}
+        user_doc = db.collection("users").document(sender_id).get()
+        user_match = user_doc.to_dict()
+        lovers = user_match.get("lover", [])
+        if lovers:
+            return {"message": "You cheat!!!"}
+        
+        sender_request = {"id": match_id, "role": "L"}
+        match_request = {"id": sender_id, "role": "L"}
+
+        db.collection("users").document(sender_id).update({
+            "outgoing_requests": firestore.ArrayUnion([sender_request])
+        })
+
+        db.collection("users").document(match_id).update({
+            "incoming_requests": firestore.ArrayUnion([match_request])
+        })
+
+        return {"message": "Love request sent."}
+    except Exception:
+        return {"message": "An error has occured."}
+
+def request_response(receiver_id, sender_id, role, decision):
     db = get_firestore_client()
     try:
         if(decision == 1):
-            db.collection("users").document(receiver_id).update({
-                "incoming_friend_requests": firestore.ArrayRemove([sender_id]),
-                "friends": firestore.ArrayUnion([sender_id])
-            })
+            if(role == "F"):
+                db.collection("users").document(receiver_id).update({
+                    "incoming_requests": firestore.ArrayRemove([{"id": sender_id, "role": "F"}]),
+                    "friends": firestore.ArrayUnion([sender_id])
+                })
 
-            db.collection("users").document(sender_id).update({
-                "outgoing_friend_requests": firestore.ArrayRemove([receiver_id]),
-                "friends": firestore.ArrayUnion([receiver_id])
-            })
+                db.collection("users").document(sender_id).update({
+                    "outgoing_requests": firestore.ArrayRemove([{"id": receiver_id, "role": "F"}]),
+                    "friends": firestore.ArrayUnion([receiver_id])
+                })
 
-            return {"message": "Friend request accepted."}
+                return {"message": "Friend request accepted."}
+            elif (role == "L"):
+                db.collection("users").document(receiver_id).update({
+                    "incoming_requests": firestore.ArrayRemove([{"id": sender_id, "role": "L"}]),
+                    "lover": sender_id
+                })
+
+                db.collection("users").document(sender_id).update({
+                    "outgoing_requests": firestore.ArrayRemove([{"id": receiver_id, "role": "L"}]),
+                    "lover": receiver_id
+                })
+
+                return {"message": "Love request accepted."}
+            else:
+                return {"message": "Invalid role."}
         else:
             db.collection("users").document(receiver_id).update({
-                "incoming_friend_requests": firestore.ArrayRemove([sender_id]),
+                "incoming_requests": firestore.ArrayRemove([{"id": sender_id, "role": role}]),
             })
 
             db.collection("users").document(sender_id).update({
-                "outgoing_friend_requests": firestore.ArrayRemove([receiver_id]),
+                "outgoing_requests": firestore.ArrayRemove([{"id": receiver_id, "role": role}]),
             })
 
-            return {"message": "Friend request rejeted."}     
+            return {"message": "Request rejected."}
     except:
         return {"message": "An error has occured."}
     

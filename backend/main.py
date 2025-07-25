@@ -34,18 +34,26 @@ async def send_friend_request(request: Request):
     print("📦 Data:", data)
     return fb.send_friend_request(data['user_id'], data['friend_id'])
 
-@app.post("/friend_request_response")
-async def friend_request_response(request: Request):
+@app.post("/send_love_request")
+async def send_love_request(request: Request):
     print("✅ Received request from", request.client.host)
     data = await request.json()
     print("📦 Data:", data)
-    return fb.friend_request_response(data['user_id'], data['friend_id'], data['decision'])
+    return fb.send_love_request(data['user_id'], data['match_id'])
+
+@app.post("/request_response")
+async def request_response(request: Request):
+    print("✅ Received request from", request.client.host)
+    data = await request.json()
+    print("📦 Data:", data)
+    return fb.request_response(data['user_id'], data['receiver_id'], data['role'], data['decision'])
 
 @app.post("/unfriend_user")
 async def unfriend_user(request: Request):
     print("✅ Received request from", request.client.host)
     data = await request.json()
     print("📦 Data:", data)
+    clear_chats(data['user_id'], data['friend_id'])
     return fb.unfriend_user(data['user_id'], data['friend_id'])
 
 @app.websocket("/ws/{user_id}")
@@ -105,3 +113,13 @@ def get_chat_history(sender_id: str = Query(...), receiver_id: str = Query(...))
     finally:
         db.close()
 
+def clear_chats(user_id, friend_id):
+    db = SessionLocal()
+    try:
+        chat_id = get_or_create_chat(db, user_id, friend_id)
+        db.query(Message).filter(Message.chat_id == chat_id).delete()
+        db.commit()
+    except Exception as e:
+        print("❌ Error clearing chats:", repr(e))
+    finally:
+        db.close()
