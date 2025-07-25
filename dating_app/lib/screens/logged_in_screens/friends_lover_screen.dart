@@ -16,25 +16,26 @@ class FriendsLoverScreen extends StatefulWidget {
 
 class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
   bool _isLoading = true;
-  List<Map<String, String>> _friendList = [];
+  List<Map<String, String>> _friendAndLoverList = [];
 
   @override
   void initState() {
     super.initState();
-    _loadFriends();
+    _loadFriendsAndLovers();
   }
 
-  Future<void> _loadFriends() async {
+  Future<void> _loadFriendsAndLovers() async {
     setState(() => _isLoading = true);
-    final List<dynamic> friends = await UserService().getFriends();
-    dev.log('Loaded friends: $friends');
+    final List<dynamic> friendsAndLovers =
+        await UserService().getFriendsAndLover();
+    dev.log('Loaded: $friendsAndLovers');
     setState(() {
-      _friendList = List<Map<String, String>>.from(friends);
+      _friendAndLoverList = List<Map<String, String>>.from(friendsAndLovers);
       _isLoading = false;
     });
   }
 
-  Future<void> _confirmUnfriend(String friendId) async {
+  Future<void> _confirmUnfriend(String friendId, String friendName) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder:
@@ -49,7 +50,7 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
               style: TextStyle(color: Colors.white),
             ),
             content: Text(
-              "Are you sure you want to unfriend $friendId?",
+              "Are you sure you want to unfriend $friendName?",
               style: const TextStyle(color: Colors.white70),
             ),
             actions: [
@@ -89,7 +90,7 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
       } else {
         ErrorService.showError(context, response);
       }
-      _loadFriends();
+      _loadFriendsAndLovers();
     }
   }
 
@@ -114,15 +115,15 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
                 child:
                     _isLoading
                         ? const Center(child: CircularLoader())
-                        : _friendList.isEmpty
+                        : _friendAndLoverList.isEmpty
                         ? _buildEmptyState()
                         : ListView.builder(
                           padding: const EdgeInsets.all(16),
                           physics: const BouncingScrollPhysics(),
-                          itemCount: _friendList.length,
+                          itemCount: _friendAndLoverList.length,
                           itemBuilder: (context, index) {
-                            final friend = _friendList[index];
-                            return _buildFriendCard(friend);
+                            final friendAndLover = _friendAndLoverList[index];
+                            return _buildFriendCard(friendAndLover);
                           },
                         ),
               ),
@@ -182,9 +183,10 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
     );
   }
 
-  Widget _buildFriendCard(Map<String, String> friend) {
-    final friendId = friend['uid'] ?? 'Unknown';
-    final friendName = friend['username'] ?? friendId;
+  Widget _buildFriendCard(Map<String, String> friendAndLover) {
+    final Id = friendAndLover['uid'] ?? 'Unknown';
+    final Name = friendAndLover['username'] ?? Id;
+    final role = friendAndLover['role'];
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: ClipRRect(
@@ -194,9 +196,17 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.06),
+              color:
+                  role == 'L'
+                      ? const Color(0xFFFF6F91).withOpacity(0.10)
+                      : Colors.white.withOpacity(0.06),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              border: Border.all(
+                color:
+                    role == 'L'
+                        ? const Color(0xFFFF6F91).withOpacity(0.3)
+                        : Colors.white.withOpacity(0.1),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.25),
@@ -211,7 +221,7 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: Text(
-                    "Friend: $friendName",
+                    "$Name",
                     style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
@@ -225,7 +235,7 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
                       () => Navigator.pushNamed(
                         context,
                         '/chat_screen',
-                        arguments: friendId,
+                        arguments: {'friendId': Id, 'friendName': Name},
                       ),
                 ),
                 IconButton(
@@ -234,7 +244,7 @@ class _FriendsLoverScreenState extends State<FriendsLoverScreen> {
                     color: Colors.redAccent,
                   ),
                   tooltip: "Unfriend",
-                  onPressed: () => _confirmUnfriend(friendId),
+                  onPressed: () => _confirmUnfriend(Id, Name),
                 ),
               ],
             ),

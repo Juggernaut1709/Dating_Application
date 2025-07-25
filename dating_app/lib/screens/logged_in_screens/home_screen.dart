@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed:
                     () => showDialog(
                       context: context,
-                      builder: (_) => const FriendRequestsDialog(),
+                      builder: (_) => const RequestsDialog(),
                     ),
               ),
               IconButton(

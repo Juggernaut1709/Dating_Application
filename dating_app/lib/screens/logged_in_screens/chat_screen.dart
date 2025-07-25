@@ -6,8 +6,10 @@ import 'package:dating_app/services/user_service.dart';
 class ChatScreen extends StatefulWidget {
   final String routeName = '/chat_screen';
   final String friendId;
+  final String friendName;
 
-  const ChatScreen({Key? key, required this.friendId}) : super(key: key);
+  const ChatScreen({Key? key, required this.friendId, required this.friendName})
+    : super(key: key);
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -17,7 +19,6 @@ class _ChatScreenState extends State<ChatScreen> {
   late ChatService chatService;
   List<Map<String, dynamic>> messages = [];
   late String userId;
-  String friendName = 'Loading...';
 
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -143,7 +144,7 @@ class _ChatScreenState extends State<ChatScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              friendName,
+              widget.friendName,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 color: Colors.white,
