@@ -13,9 +13,9 @@ class UserProfileBottomSheet extends StatefulWidget {
 }
 
 class _UserProfileBottomSheetState extends State<UserProfileBottomSheet> {
-  Future<void> _sendFriendRequest(BuildContext context) async {
+  Future<void> _sendFriendRequest(friendId) async {
     try {
-      String response = await sendFriendRequest(widget.profile['uid']);
+      String response = await sendFriendRequest(friendId);
       if (response == "success") {
         ScaffoldMessenger.of(
           context,
@@ -25,6 +25,21 @@ class _UserProfileBottomSheetState extends State<UserProfileBottomSheet> {
       }
     } catch (e) {
       ErrorService.showError(context, "Failed to send friend request.");
+    }
+  }
+
+  Future<void> _likeMatch(matchId) async {
+    try {
+      String response = await sendLoveRequest(matchId);
+      if (response == "success") {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Liked the match')));
+      } else {
+        ErrorService.showError(context, response);
+      }
+    } catch (e) {
+      ErrorService.showError(context, "Failed to like match.");
     }
   }
 
@@ -77,14 +92,16 @@ class _UserProfileBottomSheetState extends State<UserProfileBottomSheet> {
             IconButton(
               icon: const Icon(Icons.favorite_border),
               color: const Color.fromARGB(255, 209, 25, 12),
-              onPressed: () {},
+              onPressed: () {
+                _likeMatch(widget.profile['uid']);
+              },
               tooltip: 'Add Interest',
             ),
             IconButton(
               icon: const Icon(Icons.person_add),
               color: const Color.fromARGB(255, 8, 158, 158),
               onPressed: () {
-                _sendFriendRequest(context);
+                _sendFriendRequest(widget.profile['uid']);
               },
               tooltip: 'Add Friend',
             ),

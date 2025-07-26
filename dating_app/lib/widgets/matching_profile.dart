@@ -45,6 +45,21 @@ class _MatchingProfileState extends State<MatchingProfile> {
     }
   }
 
+  Future<void> _likeMatch(matchId) async {
+    try {
+      String response = await sendLoveRequest(matchId);
+      if (response == "success") {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Liked the match')));
+      } else {
+        ErrorService.showError(context, response);
+      }
+    } catch (e) {
+      ErrorService.showError(context, "Failed to like match.");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (matches.isEmpty) {
@@ -64,7 +79,7 @@ class _MatchingProfileState extends State<MatchingProfile> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      'Name: ${match[0]}',
+                      'Name: ${match[1]}',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -72,35 +87,39 @@ class _MatchingProfileState extends State<MatchingProfile> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Short name: ${match[1]}',
+                      'Short name: ${match[2]}',
                       style: const TextStyle(fontSize: 18),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Age: ${match[2]}',
+                      'Age: ${match[3]}',
                       style: const TextStyle(fontSize: 18),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Similarity: ${double.parse((match[3] * 100).toStringAsFixed(2))}%',
+                      'Similarity: ${double.parse((match[4] * 100).toStringAsFixed(2))}%',
                       style: const TextStyle(fontSize: 18),
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.person_add),
-                          onPressed: () {
-                            _sendFriendRequest(match[0]);
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.favorite),
-                          onPressed: () {
-                            // Handle like action
-                          },
-                        ),
-                      ],
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.person_add),
+                            onPressed: () {
+                              _sendFriendRequest(match[0]);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.favorite),
+                            onPressed: () {
+                              _likeMatch(match[0]);
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
