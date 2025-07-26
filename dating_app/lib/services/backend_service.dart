@@ -73,21 +73,43 @@ Future<String> sendFriendRequest(String friend) async {
   return result['message'];
 }
 
-Future<String> friendRequestResponse(friend, decision) async {
+Future<String> sendLoveRequest(String matchId) async {
+  final userService = UserService();
+  final currentUser = await userService.getCurrentUser();
+
+  final data = {'user_id': currentUser!.uid, 'match_id': matchId};
+
+  final urlSnapshot =
+      await FirebaseFirestore.instance.collection('url').doc('url').get();
+  final String url = (urlSnapshot.data())!['url'] + "/send_love_request";
+
+  dev.log('Sending love request with data: $data');
+  final response = await dio.post(
+    url,
+    data: data,
+    options: Options(headers: {"Content-Type": "application/json"}),
+  );
+
+  final result = response.data as Map<String, dynamic>;
+  return result['message'];
+}
+
+Future<String> requestResponse(receiver, role, decision) async {
   final userService = UserService();
   final currentUser = await userService.getCurrentUser();
 
   final data = {
     'user_id': currentUser!.uid,
-    'friend_id': friend,
+    'receiver_id': receiver,
+    'role': role,
     'decision': decision,
   };
 
   final urlSnapshot =
       await FirebaseFirestore.instance.collection('url').doc('url').get();
-  final String url = (urlSnapshot.data())!['url'] + "/friend_request_response";
+  final String url = (urlSnapshot.data())!['url'] + "/request_response";
 
-  dev.log('Sending friend request response with data: $data');
+  dev.log('Sending request response with data: $data');
   final response = await dio.post(
     url,
     data: data,

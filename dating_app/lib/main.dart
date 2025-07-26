@@ -37,8 +37,11 @@ class MyApp extends StatelessWidget {
         '/friends_lover_screen': (context) => const FriendsLoverScreen(),
         '/chat_screen': (context) {
           final args = ModalRoute.of(context)?.settings.arguments;
-          final friendId = (args is String && args.isNotEmpty) ? args : '';
-          return ChatScreen(friendId: friendId);
+          final friendId =
+              (args is Map<String, String>) ? args['friendId'] ?? '' : '';
+          final friendName =
+              (args is Map<String, String>) ? args['friendName'] ?? '' : '';
+          return ChatScreen(friendId: friendId, friendName: friendName);
         },
       },
     );

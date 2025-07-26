@@ -155,39 +155,57 @@ class UserService {
     };
   }
 
-  Future<List<dynamic>> getIncomingFriendRequests() async {
+  Future<List<dynamic>> getIncomingRequests() async {
     final user = await getCurrentUser();
 
     final userDoc = await _firestore.collection('users').doc(user!.uid).get();
-    final List<dynamic> requestIds =
-        userDoc.data()?['incoming_friend_requests'] ?? [];
+    final List<dynamic> requestObjs =
+        userDoc.data()?['incoming_requests'] ?? [];
 
     List<Map<String, dynamic>> requests = [];
-    for (var id in requestIds) {
+    for (var req in requestObjs) {
+      final id = req['id'];
+      final role = req['role'];
       final doc = await _firestore.collection('users').doc(id).get();
       if (doc.exists) {
         requests.add({
           'uid': id,
           'username': doc.data()?['username'] ?? '',
           'shortName': doc.data()?['shortName'] ?? '',
+          'role': role,
         });
       }
     }
     return requests;
   }
 
-  Future<List<dynamic>> getFriends() async {
+  Future<List<dynamic>> getFriendsAndLover() async {
     final user = await getCurrentUser();
 
     final userDoc = await _firestore.collection('users').doc(user!.uid).get();
     final List<dynamic> friendIds = userDoc.data()?['friends'] ?? [];
+    final dynamic loverId = userDoc.data()?['lover'];
 
     List<Map<String, String>> requests = [];
     for (var id in friendIds) {
       final doc = await _firestore.collection('users').doc(id).get();
       if (doc.exists) {
         dev.log('Friend ID: $id');
-        requests.add({'uid': id, 'username': doc.data()?['username'] ?? ''});
+        requests.add({
+          'uid': id,
+          'username': doc.data()?['username'] ?? '',
+          'role': 'F',
+        });
+      }
+    }
+    if (loverId != null) {
+      final doc = await _firestore.collection('users').doc(loverId).get();
+      if (doc.exists) {
+        requests.add({
+          'uid': loverId,
+          'username': doc.data()?['username'] ?? '',
+          'role': 'L',
+        });
       }
     }
     return requests;
