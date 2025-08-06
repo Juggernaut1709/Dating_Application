@@ -244,7 +244,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           else
             answers[index] = 0;
         });
-        // Automatically move to the next question
         if (_currentPage < questions.length - 1) {
           _pageController.nextPage(
             duration: const Duration(milliseconds: 300),

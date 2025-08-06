@@ -171,20 +171,16 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Widget _buildAnimatedForm() {
-    // A smoother slide and fade transition
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 500),
       transitionBuilder: (Widget child, Animation<double> animation) {
-        // Determine the slide direction based on whether we are switching to the login or signup form.
         final bool isGoingToLogin = isLogin;
 
-        // Define the slide-in and slide-out offsets.
         final Offset slideInBeginOffset =
             isGoingToLogin ? const Offset(-1.0, 0.0) : const Offset(1.0, 0.0);
         final Offset slideOutEndOffset =
             isGoingToLogin ? const Offset(1.0, 0.0) : const Offset(-1.0, 0.0);
 
-        // The tween is dynamically constructed based on the animation's status (forward or reverse).
         final tween = Tween<Offset>(
           begin:
               animation.status == AnimationStatus.reverse
@@ -196,14 +192,12 @@ class _AuthScreenState extends State<AuthScreen> {
                   : Offset.zero,
         );
 
-        // Animate the position using a curve for a more natural feel.
         final offsetAnimation = tween.animate(
           CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic),
         );
 
         return SlideTransition(
           position: offsetAnimation,
-          // Fade the widgets in and out for an even smoother effect.
           child: FadeTransition(opacity: animation, child: child),
         );
       },
@@ -211,7 +205,6 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  // Glassmorphism container for the forms
   Widget _buildFormContainer({Key? key, required Widget child}) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
