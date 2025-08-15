@@ -54,7 +54,6 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
       _selectedLocation!.longitude,
     );
     setState(() => _isLoading = false);
-    // In a real app: Navigator.pushReplacementNamed(context, '/home_screen');
     print("Profile saved! Navigating to Home Screen.");
   }
 
@@ -82,7 +81,11 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF1a1a2e), Color(0xFF16213e)],
+            colors: [
+              Color(0xFF12c2e9), // Light Blue
+              Color(0xFFc471ed), // Purple
+              Color(0xFFf64f59), // Pinkish accent
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -115,7 +118,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                     ? const Center(
                       child: CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          Color(0xFF00BF8F),
+                          Color(0xFFc471ed),
                         ),
                       ),
                     )
@@ -136,7 +139,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
           "Let's Get to Know You!",
           style: TextStyle(
             color: Colors.white,
-            fontSize: 28,
+            fontSize: 30,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -153,13 +156,20 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.withOpacity(0.08),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: Colors.white.withOpacity(0.15)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,7 +198,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
           _age != null ? '$_age years old' : 'Select your age',
           style: const TextStyle(
             fontSize: 22,
-            color: Color(0xFF00BF8F),
+            color: Color(0xFFc471ed),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -198,8 +208,8 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
           max: 100,
           divisions: 82,
           label: _age?.toString() ?? '18',
-          activeColor: const Color(0xFF00BF8F),
-          inactiveColor: Colors.white.withOpacity(0.2),
+          activeColor: const Color(0xFFc471ed),
+          inactiveColor: Colors.white.withOpacity(0.3),
           onChanged: (value) {
             setState(() {
               _age = value.round();
@@ -228,18 +238,20 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
                 },
                 labelStyle: TextStyle(
                   color:
-                      isSelected ? Colors.white : Colors.white.withOpacity(0.8),
+                      isSelected
+                          ? Colors.white
+                          : Colors.white.withOpacity(0.85),
                   fontWeight: FontWeight.bold,
                 ),
-                backgroundColor: Colors.white.withOpacity(0.1),
-                selectedColor: const Color(0xFF00BF8F),
+                backgroundColor: Colors.white.withOpacity(0.12),
+                selectedColor: const Color(0xFF12c2e9),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                   side: BorderSide(
                     color:
                         isSelected
-                            ? const Color(0xFF00BF8F)
-                            : Colors.white.withOpacity(0.2),
+                            ? const Color(0xFF12c2e9)
+                            : Colors.white.withOpacity(0.25),
                   ),
                 ),
                 padding: const EdgeInsets.symmetric(
@@ -259,7 +271,9 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
           borderRadius: BorderRadius.circular(15),
           child: Container(
             height: 200,
-            color: Colors.black.withOpacity(0.2),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.white.withOpacity(0.15)),
+            ),
             child:
                 _selectedLocation == null
                     ? const Center(
@@ -279,7 +293,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
         const SizedBox(height: 16),
         Text(
           _locationAddress ?? 'Fetching location...',
-          style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 16),
+          style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 16),
           textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
         ),
@@ -292,7 +306,7 @@ class _ProfileSettingScreenState extends State<ProfileSettingScreen> {
             style: TextStyle(color: Colors.white),
           ),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white.withOpacity(0.15),
+            backgroundColor: const Color(0xFFf64f59).withOpacity(0.7),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),

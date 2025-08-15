@@ -34,7 +34,11 @@ class _LandingScreenState extends State<LandingScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.music_note, color: Color(0xFF00BF8F), size: 60),
+              const Icon(
+                Icons.music_note,
+                color: Color.fromARGB(255, 141, 12, 228),
+                size: 60,
+              ),
               const SizedBox(height: 20),
               const Text(
                 "VibeMatch",

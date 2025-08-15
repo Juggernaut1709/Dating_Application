@@ -4,7 +4,6 @@ import 'package:dating_app/services/error_service.dart';
 import 'package:dating_app/services/user_service.dart';
 import 'package:dating_app/services/auth_service.dart';
 import 'package:dating_app/widgets/circular_loader.dart';
-import 'package:dating_app/widgets/confirm_button.dart';
 import 'package:dating_app/widgets/input_field.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -47,7 +46,6 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() => isLoading = true);
 
     final responseMessage = await authFunction();
-
     setState(() => isLoading = false);
 
     if (!mounted) return;
@@ -117,10 +115,13 @@ class _AuthScreenState extends State<AuthScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
-        // A beautiful gradient background
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF1a1a2e), Color(0xFF16213e)],
+            colors: [
+              Color(0xFF8E2DE2), // vivid purple
+              Color(0xFF4A00E0), // deep purple
+              Color(0xFF2575fc), // light blue
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -149,21 +150,43 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Widget _buildHeader() {
-    return const Column(
+    return Column(
       children: [
-        Icon(Icons.music_note, color: Color(0xFF00BF8F), size: 50),
-        SizedBox(height: 10),
-        Text(
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              colors: [Color(0xFF6a11cb), Color(0xFF2575fc)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.favorite_rounded,
+            size: 70,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Text(
           "VibeMatch",
           style: TextStyle(
             color: Colors.white,
-            fontSize: 36,
+            fontSize: 38,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
           ),
         ),
-        Text(
-          "Find your rhythm.",
+        const Text(
+          "Find your perfect match in harmony",
           style: TextStyle(color: Colors.white70, fontSize: 16),
         ),
       ],
@@ -174,31 +197,15 @@ class _AuthScreenState extends State<AuthScreen> {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 500),
       transitionBuilder: (Widget child, Animation<double> animation) {
-        final bool isGoingToLogin = isLogin;
-
-        final Offset slideInBeginOffset =
-            isGoingToLogin ? const Offset(-1.0, 0.0) : const Offset(1.0, 0.0);
-        final Offset slideOutEndOffset =
-            isGoingToLogin ? const Offset(1.0, 0.0) : const Offset(-1.0, 0.0);
-
-        final tween = Tween<Offset>(
-          begin:
-              animation.status == AnimationStatus.reverse
-                  ? Offset.zero
-                  : slideInBeginOffset,
-          end:
-              animation.status == AnimationStatus.reverse
-                  ? slideOutEndOffset
-                  : Offset.zero,
-        );
-
-        final offsetAnimation = tween.animate(
-          CurvedAnimation(parent: animation, curve: Curves.easeInOutCubic),
-        );
-
-        return SlideTransition(
-          position: offsetAnimation,
-          child: FadeTransition(opacity: animation, child: child),
+        return FadeTransition(
+          opacity: animation,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0.0, 0.2),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          ),
         );
       },
       child: isLogin ? _buildLoginUI() : _buildSignUpUI(),
@@ -207,16 +214,23 @@ class _AuthScreenState extends State<AuthScreen> {
 
   Widget _buildFormContainer({Key? key, required Widget child}) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(25),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           key: key,
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            color: Colors.white.withOpacity(0.10),
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: Colors.white.withOpacity(0.15)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: child,
         ),
@@ -238,7 +252,7 @@ class _AuthScreenState extends State<AuthScreen> {
             obscureText: true,
           ),
           const SizedBox(height: 24),
-          ConfirmButton(onPressed: signIn, label: "LOGIN"),
+          _buildGradientButton("LOGIN", signIn),
           const SizedBox(height: 16),
           _buildToggleText("Don't have an account?", " Sign Up"),
         ],
@@ -268,10 +282,44 @@ class _AuthScreenState extends State<AuthScreen> {
             obscureText: true,
           ),
           const SizedBox(height: 24),
-          ConfirmButton(onPressed: signUp, label: "SIGN UP"),
+          _buildGradientButton("SIGN UP", signUp),
           const SizedBox(height: 16),
           _buildToggleText("Already have an account?", " Login"),
         ],
+      ),
+    );
+  }
+
+  Widget _buildGradientButton(String label, VoidCallback onPressed) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF6a11cb), Color(0xFF2575fc)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(50),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            letterSpacing: 1.2,
+          ),
+        ),
       ),
     );
   }
@@ -281,13 +329,13 @@ class _AuthScreenState extends State<AuthScreen> {
       onTap: toggleScreen,
       child: RichText(
         text: TextSpan(
-          style: TextStyle(color: Colors.white.withOpacity(0.7)),
+          style: TextStyle(color: Colors.white.withOpacity(0.8)),
           children: [
             TextSpan(text: text1),
             TextSpan(
               text: text2,
               style: const TextStyle(
-                color: Color(0xFF00BF8F),
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),

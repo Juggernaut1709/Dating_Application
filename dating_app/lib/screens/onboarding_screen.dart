@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:dating_app/services/error_service.dart';
 import 'package:dating_app/widgets/confirm_button.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +37,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     "Are you interested in pets or animals?",
     "Do you work out regularly?",
     "Would you date someone who doesn’t want children?",
-    "Do you work out regularly?",
+    "Are you open to long-distance relationships?",
   ];
   late List<double> answers;
 
@@ -67,10 +66,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     await UserService().saveOnboardingAnswers(answers);
     final user = await UserService().getCurrentUser();
     if (user != null && await UserService().getUserAge(user.uid) != 0) {
-      // In a real app: Navigator.pushReplacementNamed(context, '/home_screen');
       print("Navigate to Home Screen");
     } else {
-      // In a real app: Navigator.pushReplacementNamed(context, '/profile_setting_screen');
       print("Navigate to Profile Settings Screen");
     }
     if (mounted) {
@@ -78,7 +75,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Profile updated successfully!"),
-          backgroundColor: Color(0xFF00BF8F),
+          backgroundColor: Color(0xFF8E2DE2),
         ),
       );
     }
@@ -98,7 +95,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF1a1a2e), Color(0xFF16213e)],
+            colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0), Color(0xFF00C9FF)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -137,20 +134,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Text(
             'Question ${_currentPage + 1} of ${questions.length}',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withOpacity(0.8),
               fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 8),
           ClipRRect(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(20),
             child: LinearProgressIndicator(
               value: progress,
-              backgroundColor: Colors.white.withOpacity(0.1),
+              backgroundColor: Colors.white.withOpacity(0.15),
               valueColor: const AlwaysStoppedAnimation<Color>(
-                Color(0xFF00BF8F),
+                Color(0xFFB721FF),
               ),
-              minHeight: 8,
+              minHeight: 10,
             ),
           ),
         ],
@@ -159,7 +157,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildQuestionPage(int index) {
-    // This provides a subtle animation for each page as it appears.
     return AnimatedBuilder(
       animation: _pageController,
       builder: (context, child) {
@@ -184,7 +181,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               _isLoading
                   ? const CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Color(0xFF00BF8F),
+                      Color(0xFF8E2DE2),
                     ),
                   )
                   : ConfirmButton(onPressed: submitAnswers, label: 'FINISH'),
@@ -196,19 +193,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildQuestionCard(int index) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(25),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            color: Colors.white.withOpacity(0.07),
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: Colors.white.withOpacity(0.15)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Icon(
+                Icons.favorite,
+                color: Colors.pinkAccent.withOpacity(0.8),
+                size: 40,
+              ),
+              const SizedBox(height: 20),
               Text(
                 questions[index],
                 style: const TextStyle(
@@ -237,12 +247,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ],
       onPressed: (selectedIndex) {
         setState(() {
-          if (selectedIndex == 0)
+          if (selectedIndex == 0) {
             answers[index] = 1;
-          else if (selectedIndex == 1)
+          } else if (selectedIndex == 1) {
             answers[index] = 0.5;
-          else
+          } else {
             answers[index] = 0;
+          }
         });
         if (_currentPage < questions.length - 1) {
           _pageController.nextPage(
@@ -251,25 +262,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           );
         }
       },
-      color: Colors.white,
+      color: Colors.white.withOpacity(0.9),
       selectedColor: Colors.white,
-      fillColor: const Color(0xFF00BF8F),
-      splashColor: const Color(0xFF00BF8F).withOpacity(0.3),
-      borderColor: Colors.white.withOpacity(0.2),
-      selectedBorderColor: const Color(0xFF00BF8F),
-      borderRadius: BorderRadius.circular(12),
+      fillColor: const Color(0xFF8E2DE2),
+      splashColor: const Color(0xFF8E2DE2).withOpacity(0.3),
+      borderColor: Colors.white.withOpacity(0.3),
+      selectedBorderColor: const Color(0xFF8E2DE2),
+      borderRadius: BorderRadius.circular(15),
       children: const [
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: Text('Yes'),
+          padding: EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+          child: Text('Yes', style: TextStyle(fontSize: 16)),
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: Text('Maybe'),
+          padding: EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+          child: Text('Maybe', style: TextStyle(fontSize: 16)),
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: Text('No'),
+          padding: EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+          child: Text('No', style: TextStyle(fontSize: 16)),
         ),
       ],
     );
