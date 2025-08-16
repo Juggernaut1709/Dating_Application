@@ -42,13 +42,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true, // Fixes potential clipping
+      extendBodyBehindAppBar: true,
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF1a1a2e), Color(0xFF16213e)],
+            colors: [Color(0xFF12c2e9), Color(0xFFc471ed), Color(0xFFf64f59)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -84,9 +84,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
+        _buildGlassButton(
+          icon: Icons.arrow_back_ios,
+          onTap: () => Navigator.of(context).pop(),
         ),
         const Text(
           'My Profile',
@@ -96,13 +96,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        IconButton(
-          icon: const Icon(Icons.edit_outlined, color: Colors.white),
-          onPressed: () {
+        _buildGlassButton(
+          icon: Icons.edit_outlined,
+          onTap: () {
             print("Navigate to Edit Profile Screen");
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildGlassButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return ClipOval(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Material(
+          color: Colors.white.withOpacity(0.2),
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Icon(icon, color: Colors.white),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -114,22 +135,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF00BF8F).withOpacity(0.5),
-                blurRadius: 25,
+                color: Colors.white.withOpacity(0.3),
+                blurRadius: 20,
                 spreadRadius: 3,
               ),
             ],
           ),
           child: CircleAvatar(
             radius: 60,
-            backgroundColor: Colors.white.withOpacity(0.1),
+            backgroundColor: Colors.white.withOpacity(0.15),
             child: CircleAvatar(
-              radius: 58,
+              radius: 55,
               backgroundColor: Colors.transparent,
               child: Icon(
                 Icons.person,
-                size: 58,
-                color: Colors.white.withOpacity(0.7),
+                size: 60,
+                color: Colors.white.withOpacity(0.85),
               ),
             ),
           ),
@@ -146,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 4),
         Text(
           '$age years old',
-          style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 18),
+          style: TextStyle(color: Colors.white70, fontSize: 18),
         ),
       ],
     );
@@ -154,20 +175,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildInfoCard() {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(25),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
-          width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.06),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            color: Colors.white.withOpacity(0.25),
+            borderRadius: BorderRadius.circular(25),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 8,
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
             ],
@@ -179,13 +198,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 label: 'Gender',
                 value: gender,
               ),
-              const Divider(color: Colors.white12, height: 24),
+              const Divider(color: Colors.white38, height: 24),
               _buildProfileDetailRow(
                 icon: Icons.email_outlined,
                 label: 'Email',
                 value: email,
               ),
-              const Divider(color: Colors.white12, height: 24),
+              const Divider(color: Colors.white38, height: 24),
               _buildProfileDetailRow(
                 icon: Icons.alternate_email,
                 label: 'Unique ID',
@@ -207,12 +226,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF00BF8F), size: 24),
+          Icon(icon, color: Colors.white, size: 24),
           const SizedBox(width: 16),
           Text(
             label,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withOpacity(0.85),
               fontSize: 16,
             ),
           ),
