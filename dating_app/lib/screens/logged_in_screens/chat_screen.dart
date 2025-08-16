@@ -12,7 +12,7 @@ class ChatScreen extends StatefulWidget {
     : super(key: key);
 
   @override
-  _ChatScreenState createState() => _ChatScreenState();
+  State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
@@ -95,7 +95,7 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF1a1a2e), Color(0xFF16213e)],
+            colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -113,7 +113,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemCount: messages.length,
                   itemBuilder: (_, index) {
                     final msg = messages[messages.length - 1 - index];
-                    final isMine = msg['sender_id'] == userId;
+                    final bool isMine = msg['sender_id'] == userId;
                     return _buildMessageBubble(isMine, msg['message']);
                   },
                 ),
@@ -128,36 +128,47 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildAppBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Row(
-        children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: Colors.white.withOpacity(0.2),
-            child: const Icon(Icons.person, color: Colors.white),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              widget.friendName,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+    return ClipRRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            border: Border(
+              bottom: BorderSide(color: Colors.white.withOpacity(0.2)),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.white70),
-            onPressed: () {},
+          child: Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.white.withOpacity(0.3),
+                child: const Icon(Icons.person, color: Colors.white),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  widget.friendName,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.more_vert, color: Colors.white70),
+                onPressed: () {},
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -167,44 +178,51 @@ class _ChatScreenState extends State<ChatScreen> {
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Align(
         alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 300),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            gradient:
-                isMine
-                    ? const LinearGradient(
-                      colors: [Color(0xFF00BF8F), Color(0xFF009A75)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    )
-                    : null,
-            color: isMine ? null : Colors.white.withOpacity(0.07),
-            borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(18),
-              topRight: const Radius.circular(18),
-              bottomLeft:
-                  isMine ? const Radius.circular(18) : const Radius.circular(6),
-              bottomRight:
-                  isMine ? const Radius.circular(6) : const Radius.circular(18),
-            ),
-            boxShadow:
-                isMine
-                    ? [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 6,
-                        offset: const Offset(0, 3),
-                      ),
-                    ]
-                    : [],
-          ),
-          child: Text(
-            message,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              height: 1.4,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 300),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                gradient:
+                    isMine
+                        ? const LinearGradient(
+                          colors: [Color(0xFF9D50BB), Color(0xFF6E48AA)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
+                        : null,
+                color: isMine ? null : Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(18),
+                  topRight: const Radius.circular(18),
+                  bottomLeft:
+                      isMine
+                          ? const Radius.circular(18)
+                          : const Radius.circular(6),
+                  bottomRight:
+                      isMine
+                          ? const Radius.circular(6)
+                          : const Radius.circular(18),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  height: 1.4,
+                ),
+              ),
             ),
           ),
         ),
@@ -216,14 +234,21 @@ class _ChatScreenState extends State<ChatScreen> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(30),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           margin: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.withOpacity(0.08),
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white.withOpacity(0.08)),
+            border: Border.all(color: Colors.white.withOpacity(0.15)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -240,14 +265,22 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
               const SizedBox(width: 10),
-              InkWell(
+              GestureDetector(
                 onTap: _sendMessage,
-                borderRadius: BorderRadius.circular(100),
                 child: Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF00BF8F),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
+                    ),
                     shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blueAccent.withOpacity(0.4),
+                        blurRadius: 12,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
                   ),
                   child: const Icon(Icons.send, color: Colors.white),
                 ),
