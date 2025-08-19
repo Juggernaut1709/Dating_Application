@@ -19,7 +19,7 @@ class _UserProfileBottomSheetState extends State<UserProfileBottomSheet> {
       if (response == "success") {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Sent a friend request')));
+        ).showSnackBar(const SnackBar(content: Text('✅ Friend request sent!')));
       } else {
         ErrorService.showError(context, response);
       }
@@ -32,9 +32,9 @@ class _UserProfileBottomSheetState extends State<UserProfileBottomSheet> {
     try {
       String response = await sendLoveRequest(matchId);
       if (response == "success") {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Liked the match')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('❤️ You liked this match!')),
+        );
       } else {
         ErrorService.showError(context, response);
       }
@@ -46,66 +46,117 @@ class _UserProfileBottomSheetState extends State<UserProfileBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.all(20.0),
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(20.0),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF6A5AE0), Color(0xFF74C0FC)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(24.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
-              blurRadius: 8,
-              offset: Offset(0, 2),
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
+        padding: const EdgeInsets.all(16.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Container(
-                width: 72,
-                height: 72,
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
-                child: Icon(Icons.person, size: 40),
+            // Avatar with gradient border
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF6A5AE0), Color(0xFF74C0FC)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              padding: const EdgeInsets.all(3),
+              child: CircleAvatar(
+                radius: 36,
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person, size: 40, color: Colors.grey[700]),
               ),
             ),
-            const SizedBox(width: 20),
+            const SizedBox(width: 16),
+            // Profile Info
             Expanded(
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Name : ${widget.profile['name']}',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    widget.profile['name'] ?? "Unknown",
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(
-                    'Age : ${widget.profile['age']}',
-                    style: TextStyle(fontSize: 16),
+                    "Age: ${widget.profile['age'] ?? '-'}",
+                    style: const TextStyle(fontSize: 16, color: Colors.white70),
                   ),
                 ],
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.favorite_border),
-              color: const Color.fromARGB(255, 209, 25, 12),
-              onPressed: () {
-                _likeMatch(widget.profile['uid']);
-              },
-              tooltip: 'Add Interest',
+            // Like Button
+            _buildActionButton(
+              icon: Icons.favorite,
+              onTap: () => _likeMatch(widget.profile['uid']),
+              gradientColors: [Colors.pinkAccent, Colors.red],
+              tooltip: "Like",
             ),
-            IconButton(
-              icon: const Icon(Icons.person_add),
-              color: const Color.fromARGB(255, 8, 158, 158),
-              onPressed: () {
-                _sendFriendRequest(widget.profile['uid']);
-              },
-              tooltip: 'Add Friend',
+            const SizedBox(width: 8),
+            // Friend Button
+            _buildActionButton(
+              icon: Icons.person_add,
+              onTap: () => _sendFriendRequest(widget.profile['uid']),
+              gradientColors: [Colors.teal, Colors.cyan],
+              tooltip: "Add Friend",
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required VoidCallback onTap,
+    required List<Color> gradientColors,
+    required String tooltip,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: gradientColors,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: gradientColors.last.withOpacity(0.4),
+                blurRadius: 6,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Icon(icon, color: Colors.white, size: 22),
         ),
       ),
     );
