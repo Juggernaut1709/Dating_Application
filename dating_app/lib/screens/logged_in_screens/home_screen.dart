@@ -303,7 +303,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 IconButton(
                   icon: const Icon(Icons.music_note_rounded),
                   tooltip: 'Song suggestions',
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/song_screen');
+                  },
                 ),
                 IconButton(
                   icon: const Icon(Icons.person_outline_rounded),

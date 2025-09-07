@@ -4,6 +4,7 @@ import 'package:dating_app/screens/logged_in_screens/chat_screen.dart';
 import 'package:dating_app/screens/logged_in_screens/friends_lover_screen.dart';
 import 'package:dating_app/screens/logged_in_screens/home_screen.dart';
 import 'package:dating_app/screens/logged_in_screens/profile_screen.dart';
+import 'package:dating_app/screens/logged_in_screens/song_screen.dart';
 import 'package:dating_app/screens/onboarding_screen.dart';
 import 'package:dating_app/screens/profile_setting_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
               (args is Map<String, String>) ? args['friendName'] ?? '' : '';
           return ChatScreen(friendId: friendId, friendName: friendName);
         },
+        '/song_screen': (context) => const SongScreen(),
       },
     );
   }
